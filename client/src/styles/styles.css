@@ -1,0 +1,141 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+
+:root {
+  --primary: #3d5af1;
+  --primary-rgb: 61, 90, 241;
+  --primary-dark: #1835c6;
+  --primary-light: #e8ebfb;
+
+  --secondary: #b4b4b4;
+  --secondary-rgb: 180, 180, 180;
+
+  --danger: #d4112e;
+  --danger-rgb: 212, 17, 46;
+
+  --success: #20c51a;
+  --success-rgb: 32, 197, 26;
+
+  --bg: #f6f6f6;
+
+  --dark: #444444;
+  --light: #ffffff;
+  --light-white: #ececec;
+
+  --main-font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  color: var(--dark);
+  outline-width: 0;
+}
+
+*:disabled {
+  cursor: not-allowed;
+}
+
+body {
+  background-color: var(--bg);
+  transition: background-color 200ms ease-in;
+}
+
+.alert {
+  margin: 0px;
+  font-size: 13px;
+  padding: 2px 4px;
+}
+
+.alert.alert-danger {
+  color: var(--danger);
+  background: rgba(var(--danger-rgb), 0.1);
+  border: 1px solid rgba(var(--danger-rgb), 0.1);
+}
+
+.alert.alert-success {
+  color: var(--success);
+  background: rgba(var(--success-rgb), 0.1);
+  border: 1px solid rgba(var(--success-rgb), 0.1);
+}
+
+.form-container {
+  background-color: var(--light);
+  border-radius: 10px;
+  box-shadow: 0 0 50px -50px rgba(0, 0, 0, 0.2);
+}
+
+.form-container .title {
+  color: var(--dark);
+  font-size: 32px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.form-container .title:after {
+  content: "";
+  background-color: var(--primary);
+  height: 3px;
+  width: 60px;
+  margin: 10px 0 0;
+  display: block;
+  clear: both;
+}
+
+.form-container .form-horizontal .form-group label {
+  margin: 5px 0px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.form-container .form-horizontal .form-control {
+  color: var(--dark);
+  background: var(--light);
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid var(--secondary);
+  box-shadow: none;
+}
+
+.form-container .form-horizontal .form-control:disabled {
+  background: rgba(var(--secondary-rgb), 0.25);
+  border-color: var(--secondary);
+}
+
+.form-container .form-horizontal .form-control:focus {
+  border-color: var(--primary);
+}
+
+.form-container .signin-link {
+  min-width: 300px;
+  color: var(--dark);
+  font-size: 14px;
+}
+
+.form-container .signin-link a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.form-container .signin-link a:hover {
+  text-decoration: underline;
+}
+
+.primary-btn {
+  color: var(--light) !important;
+  background: var(--primary);
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: 0.2s ease;
+  box-shadow: none !important;
+  outline: none;
+}
+
+.primary-btn:hover,
+.primary-btn:focus {
+  background: var(--primary-dark);
+}
