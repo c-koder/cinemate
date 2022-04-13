@@ -14,7 +14,33 @@ const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-db.movies = require("./movie.model.js")(sequelize, Sequelize);
+
+db.movie = require("./movie.model.js")(sequelize, Sequelize);
+db.category = require("./category.model.js")(sequelize, Sequelize);
+db.cast = require("./cast.model.js")(sequelize, Sequelize);
+
+db.category.belongsToMany(db.movie, {
+  through: "movie_categories",
+  foreignKey: "categoryId",
+  otherKey: "movieId",
+});
+db.movie.belongsToMany(db.category, {
+  through: "movie_categories",
+  foreignKey: "movieId",
+  otherKey: "categoryId",
+});
+
+db.cast.belongsToMany(db.movie, {
+  through: "movie_cast",
+  foreignKey: "castId",
+  otherKey: "movieId",
+});
+db.movie.belongsToMany(db.cast, {
+  through: "movie_cast",
+  foreignKey: "movieId",
+  otherKey: "castId",
+});
+
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.role.belongsToMany(db.user, {
@@ -27,6 +53,5 @@ db.user.belongsToMany(db.role, {
   foreignKey: "userId",
   otherKey: "roleId",
 });
-db.ROLES = ["user", "admin", "moderator"];
 
 module.exports = db;

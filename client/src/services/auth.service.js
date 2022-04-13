@@ -1,9 +1,7 @@
-import axios from "axios";
-
-import { API_URL } from "../constants/api.const";
+import http from "../constants/http-common";
 
 export const login = async (username, password) => {
-  const response = await axios.post(API_URL + "auth/signin", {
+  const response = await http.post("/auth/signin", {
     username,
     password,
   });
@@ -17,8 +15,8 @@ export const logout = () => {
   localStorage.removeItem("user");
 };
 
-export const register = (username, email, password) => {
-  return axios.post(API_URL + "auth/signup", {
+export const signup = (username, email, password) => {
+  return http.post("/auth/signup", {
     username,
     email,
     password,

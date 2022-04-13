@@ -1,5 +1,7 @@
 const db = require("../models");
-const Movie = db.movies;
+const Movie = db.movie;
+const Category = db.category;
+const Cast = db.cast;
 
 exports.create = (req, res) => {
   // Validate request
@@ -11,9 +13,14 @@ exports.create = (req, res) => {
   }
   // Create a Movie
   const movie = {
+    type: req.body.type,
     title: req.body.title,
+    director: req.body.director,
+    country: req.body.country,
+    release_year: req.body.release_year,
+    rating: req.body.rating,
+    duration: req.body.duration,
     description: req.body.description,
-    published: req.body.published,
   };
   // Save Movie in the database
   Movie.create(movie)
@@ -22,21 +29,58 @@ exports.create = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Movie.",
+        message: err.message || "Some error occurred while creating the Movie.",
       });
     });
 };
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 12;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
+
+const getPagingData = (count, data, page, limit) => {
+  const { rows: movies } = data;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(count / limit);
+  return { count, movies, totalPages, currentPage };
+};
+
 exports.findAll = (req, res) => {
-  Movie.findAll()
+  const { page, size, title } = req.query;
+  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
+  const { limit, offset } = getPagination(page, size);
+
+  Movie.findAndCountAll({
+    where: condition,
+    limit,
+    offset,
+    include: [
+      {
+        model: Category,
+        as: "categories",
+        attributes: ["id", "name"],
+      },
+      {
+        model: Cast,
+        as: "casts",
+        attributes: ["id", "name"],
+      },
+    ],
+  })
     .then((data) => {
-      res.send(data);
+      Movie.count({
+        distinct: true,
+        col: "movies.id",
+      }).then((count) => {
+        const response = getPagingData(count, data, page, limit);
+        res.send(response);
+      });
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving movies.",
+        message: err.message || "Some error occurred while retrieving movies.",
       });
     });
 };

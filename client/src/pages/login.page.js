@@ -1,94 +1,126 @@
-import { useState } from "react";
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
+import { useContext, useEffect, useState } from "react";
+import { useAnimation, motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
+
 import { login } from "../services/auth.service";
+import { AuthContext } from "../helpers/AuthContext";
 
-const required = (value) => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        This field is required!
-      </div>
-    );
-  }
-};
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required("Username is required."),
+  password: Yup.string().required("Password is required."),
+});
 
-const Login = ({ setLogged }) => {
+const Login = () => {
+  const { setCurrentUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState(null);
-  const [checkBtn, setCheckBtn] = useState(null);
+  const controls = useAnimation();
+  const [ref, inView] = useInView({ threshold: 0.2 });
+  const viewAnim = {
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+    hidden: {
+      opacity: 0,
+      y: -20,
+      transition: { duration: 0.5 },
+    },
+  };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    }
+  }, [controls, inView]);
+
+  const handleLogin = () => {
     setMessage("");
     setLoading(true);
-
-    form.validateAll();
-    if (checkBtn.context._errors.length === 0) {
-      login(username, password).then(
-        (response) => {
-          setLogged(response.accesstoken !== null)
-          navigate("/profile");
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-          setLoading(false);
-          setMessage(resMessage);
-          setPassword("");
-        }
-      );
-    } else {
-      setLoading(false);
-    }
+    login(username, password).then(
+      (response) => {
+        setLoading(false);
+        setCurrentUser(response)
+        navigate("/profile");
+      },
+      (error) => {
+        const resMessage =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
+        setLoading(false);
+        setMessage(resMessage);
+        setPassword("");
+      }
+    );
   };
 
   return (
-    <div className="min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <motion.div
+      ref={ref}
+      animate={controls}
+      initial="hidden"
+      variants={viewAnim}
+      className="min-vh-100 d-flex flex-column justify-content-center align-items-center"
+    >
       <div className="row justify-content-center">
         <div className="form-container p-4">
           <h3 className="title">Login</h3>
-          <Form
-            onSubmit={handleLogin}
+          <form
+            onSubmit={handleSubmit(handleLogin)}
             className="form-horizontal"
-            ref={(c) => {
-              setForm(c);
-            }}
           >
             <div className="form-group col-md-auto">
               <label>User Name</label>
-              <Input
+              <input
                 type="text"
-                className="form-control"
+                name="username"
+                {...register("username")}
+                className={`form-control ${
+                  errors.username ? "is-invalid" : ""
+                }`}
                 placeholder="User Name"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                validations={[required]}
               />
+              <div className="invalid-feedback">{errors.username?.message}</div>
             </div>
 
             <div className="form-group col-md-auto">
               <label>Password</label>
-              <Input
+              <input
                 type="password"
-                className="form-control"
+                name="password"
+                {...register("password")}
+                className={`form-control ${
+                  errors.password ? "is-invalid" : ""
+                }`}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                validations={[required]}
               />
+              <div className="invalid-feedback">{errors.password?.message}</div>
             </div>
 
             <span className="hstack my-3">
@@ -117,16 +149,10 @@ const Login = ({ setLogged }) => {
                 </div>
               </div>
             )}
-            <CheckButton
-              style={{ display: "none" }}
-              ref={(c) => {
-                setCheckBtn(c);
-              }}
-            />
-          </Form>
+          </form>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

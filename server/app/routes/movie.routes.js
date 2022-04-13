@@ -21,9 +21,9 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isAdmin],
     movies.delete
   );
-   app.delete(
-     "/api/movies/",
-     [authJwt.verifyToken, authJwt.isAdmin],
-     movies.deleteAll
-   );
+  app.delete(
+    "/api/movies/",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    movies.deleteAll
+  );
 };
