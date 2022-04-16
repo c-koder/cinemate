@@ -5,6 +5,22 @@ export const getMovies = (params) => {
   return http.get("/movies", { params });
 };
 
+export const addMovie = (params) => {
+  return http.post("/movies", { params });
+};
+
+export const updateMovie = (params) => {
+  return http.put(`/movies/${params.id}`, { params });
+};
+
+export const deleteMovie = (params) => {
+  return http.delete(`/movies/${params.id}`, { params });
+};
+
+export const getGenres = () => {
+  return http.get("/genres");
+};
+
 // export const getUserBoard = () => {
 //   return axios.get(API_URL + "user", { headers: authHeader() });
 // };

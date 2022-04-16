@@ -10,15 +10,15 @@ module.exports = function (app) {
   });
   app.get("/api/movies/", movies.findAll);
   app.get("/api/movies/:id", movies.findOne);
-  app.post("/api/movies/", [authJwt.verifyToken], movies.create);
+  app.post("/api/movies/", movies.create);
   app.put(
     "/api/movies/:id",
-    [authJwt.verifyToken, authJwt.isModerator],
+    // [authJwt.verifyToken, authJwt.isModerator],
     movies.update
   );
   app.delete(
     "/api/movies/:id",
-    [authJwt.verifyToken, authJwt.isAdmin],
+    // [authJwt.verifyToken, authJwt.isAdmin],
     movies.delete
   );
   app.delete(

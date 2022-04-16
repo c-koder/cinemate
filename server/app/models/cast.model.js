@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Cast = sequelize.define("cast", {
+  const Cast = sequelize.define("casts", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,

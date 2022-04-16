@@ -1,27 +1,51 @@
 module.exports = (sequelize, Sequelize) => {
   const Movie = sequelize.define("movies", {
-    type: {
-      type: Sequelize.STRING,
-    },
     title: {
       type: Sequelize.STRING,
     },
-    director: {
+    tagline: {
       type: Sequelize.STRING,
     },
-    country: {
+    release_date: {
       type: Sequelize.STRING,
     },
-    release_year: {
+    status: {
       type: Sequelize.STRING,
     },
-    rating: {
+    runtime: {
+      type: Sequelize.INTEGER,
+    },
+    original_language: {
       type: Sequelize.STRING,
     },
-    duration: {
+    homepage: {
       type: Sequelize.STRING,
     },
-    description: {
+    budget: {
+      type: Sequelize.INTEGER,
+    },
+    revenue: {
+      type: Sequelize.INTEGER,
+    },
+    imdb_id: {
+      type: Sequelize.STRING,
+    },
+    overview: {
+      type: Sequelize.TEXT,
+    },
+    poster_path: {
+      type: Sequelize.STRING,
+    },
+    vote_average: {
+      type: Sequelize.FLOAT,
+    },
+    vote_count: {
+      type: Sequelize.INTEGER,
+    },
+    popularity: {
+      type: Sequelize.FLOAT,
+    },
+    bookmarked: {
       type: Sequelize.STRING,
     },
   });

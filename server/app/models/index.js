@@ -16,33 +16,46 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.movie = require("./movie.model.js")(sequelize, Sequelize);
-db.category = require("./category.model.js")(sequelize, Sequelize);
+db.genre = require("./genre.model.js")(sequelize, Sequelize);
 db.cast = require("./cast.model.js")(sequelize, Sequelize);
+db.collection = require("./collection.model.js")(sequelize, Sequelize);
 
-db.category.belongsToMany(db.movie, {
-  through: "movie_categories",
-  foreignKey: "categoryId",
+db.genre.belongsToMany(db.movie, {
+  through: "movie_genres",
+  foreignKey: "genreId",
   otherKey: "movieId",
 });
-db.movie.belongsToMany(db.category, {
-  through: "movie_categories",
+db.movie.belongsToMany(db.genre, {
+  through: "movie_genres",
   foreignKey: "movieId",
-  otherKey: "categoryId",
+  otherKey: "genreId",
 });
 
 db.cast.belongsToMany(db.movie, {
-  through: "movie_cast",
+  through: "movie_casts",
   foreignKey: "castId",
   otherKey: "movieId",
 });
 db.movie.belongsToMany(db.cast, {
-  through: "movie_cast",
+  through: "movie_casts",
   foreignKey: "movieId",
   otherKey: "castId",
 });
 
+db.collection.belongsToMany(db.movie, {
+  through: "movie_collections",
+  foreignKey: "collectionId",
+  otherKey: "movieId",
+});
+db.movie.belongsToMany(db.collection, {
+  through: "movie_collections",
+  foreignKey: "movieId",
+  otherKey: "collectionId",
+});
+
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
+
 db.role.belongsToMany(db.user, {
   through: "user_roles",
   foreignKey: "roleId",

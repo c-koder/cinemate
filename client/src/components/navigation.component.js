@@ -13,7 +13,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="navbar navbar-dark navbar-expand-md bg-dark fixed-top justify-content-center">
+    <nav className="navbar navbar-dark navbar-expand-md bg-dark justify-content-center">
       <div className="container">
         <Link to="/" className="navbar-brand d-flex me-auto">
           Cinemate

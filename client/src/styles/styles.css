@@ -4,7 +4,7 @@
   --primary: #e8231c;
   --primary-rgb: 232, 35, 28;
 
-  --primary-dark: #1b1111;
+  --primary-dark: #ac0600;
   --primary-light: #f8dfdd;
 
   --secondary: #333333;
@@ -18,7 +18,7 @@
 
   --bg: #f6f6f6;
 
-  --dark: #313131;
+  --dark: #181818;
   --light: #fbfbfb;
   --light-white: #ebebeb;
 
@@ -38,7 +38,7 @@
 }
 
 body {
-  background-color: var(--primary-dark);
+  background-color: var(--dark);
   transition: background-color 0.2s ease;
 }
 
@@ -71,13 +71,13 @@ body {
 }
 
 .form-container {
-  background-color: var(--light);
+  background-color: rgba(235, 235, 235, 0.05);
   border-radius: 10px;
   box-shadow: 0 0 50px -50px rgba(0, 0, 0, 0.2);
 }
 
 .form-container .title {
-  color: var(--dark);
+  color: var(--light);
   font-size: 32px;
   font-weight: 600;
   text-transform: capitalize;
@@ -93,33 +93,35 @@ body {
   clear: both;
 }
 
-.form-container .form-horizontal .form-group label {
+.form-horizontal .form-group label {
+  color: var(--light);
   margin: 5px 0px;
+  text-align: left;
   font-size: 16px;
   font-weight: 600;
 }
 
-.form-container .form-horizontal .form-control {
-  color: var(--dark);
-  background: var(--light);
+.form-horizontal .form-control {
+  color: var(--light);
+  background: var(--secondary);
   height: 40px;
   border-radius: 5px;
-  border: 1px solid var(--secondary);
+  border: none;
   box-shadow: none;
 }
 
-.form-container .form-horizontal .form-control:disabled {
-  background: rgba(var(--secondary-rgb), 0.25);
+.form-horizontal .form-control:disabled {
+  background: rgba(var(--secondary-rgb), 0.05);
   border-color: var(--secondary);
 }
 
-.form-container .form-horizontal .form-control:focus {
+.form-horizontal .form-control:focus {
   border-color: var(--primary);
 }
 
 .form-container .signin-link {
   min-width: 360px;
-  color: var(--dark);
+  color: var(--light);
   font-size: 14px;
 }
 
@@ -142,11 +144,17 @@ body {
   border-radius: 5px;
   transition: 0.2s ease;
   box-shadow: none !important;
+  border: none;
   outline: none;
 }
 
 .primary-btn:hover,
 .primary-btn:focus {
+  background: var(--primary-dark);
+}
+
+.primary-btn:disabled {
+  cursor: not-allowed;
   background: var(--primary-dark);
 }
 
@@ -174,7 +182,7 @@ body {
 }
 
 .page-item a.page-link:hover {
-  background-color: var(--dark);
+  background-color: var(--secondary) !important;
 }
 
 .page-item.active .page-link {
@@ -185,7 +193,7 @@ body {
 .page-item.disabled .page-link {
   background-color: transparent;
   border-color: var(--secondary);
-  color: var(--secondary) !important;
+  color: var(--light-white) !important;
 }
 
 .sr-only {
@@ -198,4 +206,23 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 25px;
+  background-color: var(--light);
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
 }

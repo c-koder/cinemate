@@ -1,4 +1,3 @@
-import React from "react";
 import Movie from "./movie.component";
 
 const MovieList = ({ movies }) => {
@@ -14,8 +13,8 @@ const MovieList = ({ movies }) => {
       {arrayChunk(movies, 3).map((row, i) => {
         return (
           <div key={i} className="row justify-content-center">
-            {row.map((col, i) => {
-              return <Movie key={col.id} movie={col} />;
+            {row.map((movie, i) => {
+              return <Movie key={movie.id} movie={movie} />;
             })}
           </div>
         );

@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 const app = express();
 
 const corsOptions = {
@@ -7,8 +8,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   res.json({ message: "Cinemate Server-Side" });
@@ -18,6 +18,7 @@ const db = require("./app/models");
 db.sequelize.sync();
 
 require("./app/routes/movie.routes")(app);
+require("./app/routes/genre.routes")(app);
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 

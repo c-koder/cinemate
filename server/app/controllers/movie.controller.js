@@ -1,31 +1,45 @@
 const db = require("../models");
 const Movie = db.movie;
-const Category = db.category;
+
+const Genre = db.genre;
+const GenreController = require("./genre.controller.js");
+
+const Collection = db.collection;
+const CollectionController = require("./collection.controller.js");
+
 const Cast = db.cast;
 
+const Op = db.Sequelize.Op;
+
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.title) {
+  if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
     });
     return;
   }
-  // Create a Movie
-  const movie = {
-    type: req.body.type,
-    title: req.body.title,
-    director: req.body.director,
-    country: req.body.country,
-    release_year: req.body.release_year,
-    rating: req.body.rating,
-    duration: req.body.duration,
-    description: req.body.description,
-  };
-  // Save Movie in the database
-  Movie.create(movie)
-    .then((data) => {
-      res.send(data);
+
+  Movie.create(req.body.params)
+    .then((responseMovie) => {
+      if (req.body.params.genres) {
+        req.body.params.genres.map((genre) => {
+          GenreController.createIfNotExists(genre.id, genre.name).then(
+            (responseGenre) => {
+              responseMovie.addGenre(responseGenre);
+            }
+          );
+        });
+      }
+
+      if (req.body.params.belongs_to_collection) {
+        CollectionController.createIfNotExists(
+          req.body.params.belongs_to_collection
+        ).then((responseCollection) => {
+          responseMovie.addCollection(responseCollection);
+        });
+      }
+
+      res.send({ message: "Movie added successfully." });
     })
     .catch((err) => {
       res.status(500).send({
@@ -40,43 +54,74 @@ const getPagination = (page, size) => {
   return { limit, offset };
 };
 
-const getPagingData = (count, data, page, limit) => {
-  const { rows: movies } = data;
-  const currentPage = page ? +page : 0;
-  const totalPages = Math.ceil(count / limit);
-  return { count, movies, totalPages, currentPage };
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows: movies } = data;
+  const currentPage = page ? +page : 12;
+  const totalPages = Math.ceil(totalItems / limit);
+  return { totalItems, movies, totalPages, currentPage };
 };
 
 exports.findAll = (req, res) => {
-  const { page, size, title } = req.query;
-  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
+  const { page, size, title, genre, year, year_id, orderBy, ratedBy } =
+    req.query;
+
+  var sortByTitle = title ? { title: { [Op.like]: `%${title}%` } } : null;
+  var sortByYear = null;
+  if (year_id > 0) {
+    if (year_id < 6) {
+      sortByYear = { release_date: { [Op.like]: `%${year}%` } };
+    } else {
+      let lYear = year.split(" - ")[0];
+      let hYear = year.split(" - ")[1];
+      sortByYear = {
+        release_date: {
+          [Op.between]: [lYear, hYear + 1],
+        },
+      };
+    }
+  }
+
+  var sortByRating =
+    ratedBy && ratedBy != 0
+      ? { vote_average: { [Op.gte]: parseInt(ratedBy.substring(0, 1), 10) } }
+      : null;
+
+  let orderByClause;
+  if (orderBy == 0) {
+    orderByClause = [["updatedAt", "DESC"]];
+  } else if (orderBy == 1) {
+    orderByClause = [["createdAt", "ASC"]];
+  } else if (orderBy == 2) {
+    orderByClause = [["popularity", "DESC"]];
+  } else if (orderBy == 3) {
+    orderByClause = [["release_date", "DESC"]];
+  } else if (orderBy == 4) {
+    orderByClause = [["title", "ASC"]];
+  } else if (orderBy == 5) {
+    orderByClause = [["vote_average", "DESC"]];
+  } else {
+    orderByClause = [["updatedAt", "DESC"]];
+  }
+
+  var sortByGenre = genre && genre != 0 ? { id: parseInt(genre, 10) } : null;
+
   const { limit, offset } = getPagination(page, size);
 
   Movie.findAndCountAll({
-    where: condition,
+    include: {
+      model: Genre,
+      through: "movie_genres",
+      where: sortByGenre,
+    },
+    where: { ...sortByTitle, ...sortByYear, ...sortByRating },
+    order: orderByClause,
     limit,
     offset,
-    include: [
-      {
-        model: Category,
-        as: "categories",
-        attributes: ["id", "name"],
-      },
-      {
-        model: Cast,
-        as: "casts",
-        attributes: ["id", "name"],
-      },
-    ],
+    distinct: true,
   })
     .then((data) => {
-      Movie.count({
-        distinct: true,
-        col: "movies.id",
-      }).then((count) => {
-        const response = getPagingData(count, data, page, limit);
-        res.send(response);
-      });
+      const response = getPagingData(data, page, limit);
+      res.send(response);
     })
     .catch((err) => {
       res.status(500).send({
@@ -106,7 +151,7 @@ exports.findOne = (req, res) => {
 
 exports.update = (req, res) => {
   const id = req.params.id;
-  Movie.update(req.body, {
+  Movie.update(req.body.params, {
     where: { id: id },
   })
     .then((num) => {

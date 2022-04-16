@@ -1,39 +1,49 @@
-const Movie = ({ movie }) => {
-  const formatTime = () => {
-    const time = movie.duration.replace(/min/, "");
-    return `${Math.floor(time / 60)}h ${time % 60}mins`;
-  };
+import moment from "moment";
 
+import notfound from "../assets/notfound.png";
+
+const Movie = ({ movie }) => {
   return (
     <div className="col-md-auto movie-container">
       <div className="menu">
         <i className="bi bi-three-dots-vertical"></i>
       </div>
+      <div className="ratings">
+        <i className="bi bi-star-fill"></i>
+        <span>{movie.vote_average}</span>
+      </div>
       <div className="movie-img">
         <img
-          src={
-            "https://i.ibb.co/FDGqCmM/papers-co-ag74-interstellar-wide-space-film-movie-art-33-iphone6-wallpaper.jpg" ||
-            movie.image
-          }
+          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+          onError={(e) => (
+            (e.target.onerror = null), (e.target.src = notfound)
+          )}
         />
       </div>
       <div className="movie-text">
         <h1>{movie.title}</h1>
-        <ul className="row">
-          {movie.categories.map((category, i) => {
-            return <li key={i}>{category.name}</li>;
-          })}
-        </ul>
         <span className="hstack">
-          <h3 style={{ marginRight: 10 }}>{movie.rating}</h3>
-          <h3>{movie.type === "Movie" ? formatTime() : movie.duration}</h3>
+          <h3>
+            {movie.release_date === "Invalid date"
+              ? movie.status
+              : moment(movie.release_date, "YYYY-MM-DD").format("YYYY")}
+          </h3>
+          <h3 className="ms-auto">
+            {movie.runtime === 0
+              ? ""
+              : `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}mins`}
+          </h3>
         </span>
         <div className="hstack action-stack">
-          <div className="watch-btn">
-            <h3>
-              <i className="bi bi-play-fill"></i>WATCH TRAILER
-            </h3>
-          </div>
+          {movie.homepage && (
+            <div className="watch-btn">
+              <a href={movie.homepage} target="_blank" style={{ all: "unset" }}>
+                <h3>
+                  <i className="bi bi-play-fill"></i>VISIT SITE
+                </h3>
+              </a>
+            </div>
+          )}
           <div className="hstack ms-auto">
             <div className="action-btn">
               <i className="bi bi-bookmark-fill"></i>
