@@ -1,19 +1,34 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../helpers/AuthContext";
 
 import { logout } from "../services/auth.service";
+import ContextDropdown from "./contextDropdown.component";
 
 const Navigation = () => {
   const { currentUser, setCurrentUser } = useContext(AuthContext);
+
+  const values = [
+    { id: 0, name: "Profile" },
+    { id: 1, name: "Privacy" },
+    { id: 2, name: "Settings" },
+    { id: 3, name: "Login" },
+  ];
+  const [value, setValue] = useState(undefined);
 
   const handleLogout = () => {
     setCurrentUser(undefined);
     logout();
   };
 
+  useEffect(() => {
+    if (value && value.id === 3) {
+      handleLogout();
+    }
+  }, [value]);
+
   return (
-    <nav className="navbar navbar-dark navbar-expand-md bg-dark justify-content-center">
+    <nav className="navbar navbar-dark navbar-expand-md bg-dark justify-content-center fixed-top">
       <div className="container">
         <Link to="/" className="navbar-brand d-flex me-auto">
           Cinemate
@@ -22,11 +37,11 @@ const Navigation = () => {
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#collapsingNavbar3"
+          data-bs-target="#navbar"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="navbar-collapse collapse w-100" id="collapsingNavbar3">
+        <div className="navbar-collapse collapse w-100" id="navbar">
           <ul className="nav navbar-nav ms-auto w-100 justify-content-end">
             <li className="nav-item">
               <Link to="/" className="nav-link">
@@ -34,56 +49,29 @@ const Navigation = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="/movies" className="nav-link">
-                Movies
+              <Link to="/explore" className="nav-link">
+                Explore
               </Link>
             </li>
             {currentUser ? (
               <div className="navbar-nav ml-auto">
-                <li className="nav-item dropdown">
+                <li className="nav-item">
+                  <Link to="/saved" className="nav-link">
+                    Saved
+                  </Link>
+                </li>
+                <li className="nav-item dropdown context-dropdown">
                   <Link
                     to="/profile"
                     className="nav-link dropdown-toggle"
-                    id="navbarScrollingDropdown"
-                    role="button"
+                    id="movieSizeDropdown"
                     data-bs-toggle="dropdown"
+                    aria-haspopup="true"
                     aria-expanded="false"
                   >
                     {currentUser.username}
                   </Link>
-
-                  <ul
-                    className="dropdown-menu dropdown-menu-end"
-                    aria-labelledby="navbarScrollingDropdown"
-                  >
-                    <li>
-                      <Link className="dropdown-item" to="#">
-                        Profile
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="#">
-                        Privacy
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="#">
-                        Settings
-                      </Link>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <Link
-                        to="/login"
-                        className="dropdown-item"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </Link>
-                    </li>
-                  </ul>
+                  <ContextDropdown values={values} setValue={setValue} />
                 </li>
               </div>
             ) : (

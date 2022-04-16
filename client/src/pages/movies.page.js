@@ -15,6 +15,7 @@ import {
 } from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import axios from "axios";
+import { addCast } from "../services/cast.service";
 
 const Movies = () => {
   const { width } = useWindowDimensions();
@@ -203,40 +204,46 @@ const Movies = () => {
 
     getMovies(params)
       .then(async (response) => {
-        // response.data.movies.map((movie) => {
-        //   const id = movie.id;
-        //   axios
+        // for (let i = 0; i < response.data.length; i++) {
+        //   const movie = response.data[i];
+        //   await axios
         //     .get(
-        //       `https://api.themoviedb.org/3/movie/${movie.id}?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
+        //       `https:api.themoviedb.org/3/movie/${movie.id}?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
         //     )
-        //     .then((response) => {
-        //       updateMovie({
-        //         id: id,
-        //         // release_date:
-        //         //   response.data.release_date !== null &&
-        //         //   response.data.release_date !== undefined &&
-        //         //   response.data.release_date !== ""
-        //         //     ? response.data.release_date
-        //         //     : null,
-        //         poster_path: response.data.poster_path,
-        //         // status: response.data.status,
-        //         // homepage: response.data.homepage,
-        //         // budget: response.data.budget,
-        //         // revenue: response.data.revenue,
-        //         // vote_average: response.data.vote_average,
-        //         // vote_count: response.data.vote_count,
-        //         // popularity: response.data.popularity,
-        //       }).then((updateResponse) =>
-        //         console.log(updateResponse.data.message)
-        //       );
-        //     })
-        //     .catch((err) => {
-        //       deleteMovie({ id: id }).then((deleteResponse) =>
-        //         console.log(deleteResponse.data.message)
-        //       );
-        //     });
+        //     .then(async (response) => {
+        // for (let j = 0; j < response.data.cast.length; j++) {
+        //   const item = response.data.cast[j];
+        //   await addCast({
+        //     movie_id: id,
+        //     id: item.cast_id,
+        //     character: item.character,
+        //     name: item.name,
+        //     order: item.order,
+        //     popularity: item.popularity,
+        //     profile_path: item.profile_path,
+        //   }).then((addResponse) => console.log(addResponse.data.message));
+        // }
+
+        // for (let j = 0; j < response.data.length; j++) {
+        //   const item = response.data[j];
+        //   await updateMovie({
+        //     id: movie.id,
+        //     release_date: item.release_date,
+        //     backdrop_path: item.backdrop_path,
+        //     status: item.status,
+        //     homepage: item.homepage,
+        //     budget: item.budget,
+        //     revenue: item.revenue,
+        //     vote_average: item.vote_average,
+        //     vote_count: item.vote_count,
+        //     popularity: item.popularity,
+        //   }).then((updateResponse) =>
+        //     console.log(updateResponse.data.message)
+        //   );
+        // }
         // });
-        console.log(response.data.movies);
+        // }
+        console.log(response);
         setMovies(response.data.movies);
         setPageCount(response.data.totalPages);
         setLoading(false);
@@ -349,7 +356,7 @@ const Movies = () => {
           initial="hidden"
           variants={viewAnim}
           className="text-center"
-          style={{ marginTop: width > 992 && "320px" }}
+          style={{ marginTop: width > 992 && "375px" }}
         >
           <h1 style={{ color: "var(--light)", padding: 10, fontSize: 24 }}>
             Explore Movies

@@ -40,10 +40,11 @@
 body {
   background-color: var(--dark);
   transition: background-color 0.2s ease;
+  overflow-x: hidden;
 }
 
 .is-invalid {
-  border-color: var(--danger) !important;
+  border: 1px solid var(--danger) !important;
 }
 
 .invalid-feedback {
@@ -107,7 +108,7 @@ body {
   height: 40px;
   border-radius: 5px;
   border: none;
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
 .form-horizontal .form-control:disabled {
@@ -206,6 +207,14 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.tooltip {
+  color: var(--light) !important;
+  background: var(--dark) !important;
+  font-size: 14px !important;
+  border: 1px solid rgba(51, 51, 51, 1) !important;
+  padding: 5px 10px !important;
 }
 
 ::-webkit-scrollbar-track {

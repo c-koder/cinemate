@@ -15,12 +15,39 @@ app.get("/", (req, res) => {
 });
 
 const db = require("./app/models");
-db.sequelize.sync();
+const Role = db.role;
+db.sequelize.sync().then(() => {
+  initial();
+});
 
 require("./app/routes/movie.routes")(app);
 require("./app/routes/genre.routes")(app);
+require("./app/routes/cast.routes")(app);
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
+
+function initial() {
+  Role.findOrCreate({
+    where: {
+      id: 1,
+      name: "user",
+    },
+  });
+
+  Role.findOrCreate({
+    where: {
+      id: 2,
+      name: "moderator",
+    },
+  });
+
+  Role.findOrCreate({
+    where: {
+      id: 3,
+      name: "admin",
+    },
+  });
+}
 
 const PORT = process.env.PORT || 8080;
 

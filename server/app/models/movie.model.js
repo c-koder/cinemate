@@ -36,6 +36,9 @@ module.exports = (sequelize, Sequelize) => {
     poster_path: {
       type: Sequelize.STRING,
     },
+    backdrop_path: {
+      type: Sequelize.STRING,
+    },
     vote_average: {
       type: Sequelize.FLOAT,
     },

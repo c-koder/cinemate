@@ -16,10 +16,12 @@ export const logout = () => {
 };
 
 export const signup = (username, email, password) => {
+  const roles = ["user"]
   return http.post("/auth/signup", {
     username,
     email,
     password,
+    roles
   });
 };
 

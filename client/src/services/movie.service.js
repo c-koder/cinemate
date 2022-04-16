@@ -5,16 +5,28 @@ export const getMovies = (params) => {
   return http.get("/movies", { params });
 };
 
+export const getMovieDetails = (id) => {
+  return http.get(`/movies/${id}`);
+};
+
 export const addMovie = (params) => {
   return http.post("/movies", { params });
 };
 
 export const updateMovie = (params) => {
-  return http.put(`/movies/${params.id}`, { params });
+  return http.put(
+    `/movies/${params.id}`,
+    { params },
+    { headers: authHeader() }
+  );
 };
 
 export const deleteMovie = (params) => {
-  return http.delete(`/movies/${params.id}`, { params });
+  return http.delete(
+    `/movies/${params.id}`,
+    { params },
+    { headers: authHeader() }
+  );
 };
 
 export const getGenres = () => {

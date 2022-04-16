@@ -132,7 +132,16 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
   const id = req.params.id;
-  Movie.findByPk(id)
+  Movie.findByPk(id, {
+    include: [
+      {
+        model: Cast,
+      },
+      {
+        model: Genre,
+      },
+    ],
+  })
     .then((data) => {
       if (data) {
         res.send(data);

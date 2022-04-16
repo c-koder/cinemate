@@ -7,6 +7,18 @@ module.exports = (sequelize, Sequelize) => {
     name: {
       type: Sequelize.STRING,
     },
+    character: {
+      type: Sequelize.STRING,
+    },
+    order: {
+      type: Sequelize.INTEGER,
+    },
+    popularity: {
+      type: Sequelize.FLOAT,
+    },
+    profile_path: {
+      type: Sequelize.STRING,
+    },
   });
   return Cast;
 };
