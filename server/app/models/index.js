@@ -31,15 +31,21 @@ db.movie.belongsToMany(db.genre, {
   otherKey: "genreId",
 });
 
+const MovieCast = sequelize.define("movie_casts", {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false,
+  },
+  order: { type: Sequelize.INTEGER },
+});
+
 db.cast.belongsToMany(db.movie, {
-  through: "movie_casts",
-  foreignKey: "castId",
-  otherKey: "movieId",
+  through: { model: MovieCast, unique: false },
 });
 db.movie.belongsToMany(db.cast, {
-  through: "movie_casts",
-  foreignKey: "movieId",
-  otherKey: "castId",
+  through: { model: MovieCast, unique: false },
 });
 
 db.collection.belongsToMany(db.movie, {

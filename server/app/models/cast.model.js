@@ -10,9 +10,6 @@ module.exports = (sequelize, Sequelize) => {
     character: {
       type: Sequelize.STRING,
     },
-    order: {
-      type: Sequelize.INTEGER,
-    },
     popularity: {
       type: Sequelize.FLOAT,
     },

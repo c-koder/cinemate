@@ -64,7 +64,7 @@ const MovieDetails = () => {
             className="backdrop-img"
             src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
           />
-          <div className="hstack align-items-start">
+          <div className="hstack">
             <div className="col-md-auto poster-img">
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}

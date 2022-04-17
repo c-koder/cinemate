@@ -204,25 +204,27 @@ const Movies = () => {
 
     getMovies(params)
       .then(async (response) => {
-        // for (let i = 0; i < response.data.length; i++) {
-        //   const movie = response.data[i];
+        // let count = 0;
+        // for (count; count < response.data.length; count++) {
+        //   const movie = response.data[count];
         //   await axios
         //     .get(
-        //       `https:api.themoviedb.org/3/movie/${movie.id}?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
+        //       `https:api.themoviedb.org/3/movie/${movie.id}/credits?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
         //     )
-        //     .then(async (response) => {
-        // for (let j = 0; j < response.data.cast.length; j++) {
-        //   const item = response.data.cast[j];
-        //   await addCast({
-        //     movie_id: id,
-        //     id: item.cast_id,
-        //     character: item.character,
-        //     name: item.name,
-        //     order: item.order,
-        //     popularity: item.popularity,
-        //     profile_path: item.profile_path,
-        //   }).then((addResponse) => console.log(addResponse.data.message));
-        // }
+        //     .then(async (tmdbResponse) => {
+        //       let data = tmdbResponse.data.cast.slice(0, 10);
+        //       for (let j = 0; j < data.length; j++) {
+        //         const item = data[j];
+        //         await addCast({
+        //           movie_id: movie.id,
+        //           id: item.id,
+        //           character: item.character,
+        //           name: item.name,
+        //           order: item.order,
+        //           popularity: item.popularity,
+        //           profile_path: item.profile_path,
+        //         });
+        //       }
 
         // for (let j = 0; j < response.data.length; j++) {
         //   const item = response.data[j];
@@ -241,14 +243,16 @@ const Movies = () => {
         //     console.log(updateResponse.data.message)
         //   );
         // }
-        // });
+
+        // console.log(count);
         // }
-        console.log(response);
+
         setMovies(response.data.movies);
         setPageCount(response.data.totalPages);
         setLoading(false);
       })
       .catch((err) => console.log(err));
+    // }, []);
   }, [currentPage, pageSize, genre, year, orderBy, ratedBy]);
 
   useEffect(() => {
