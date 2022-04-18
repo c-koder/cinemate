@@ -18,6 +18,7 @@ db.sequelize = sequelize;
 db.movie = require("./movie.model.js")(sequelize, Sequelize);
 db.genre = require("./genre.model.js")(sequelize, Sequelize);
 db.cast = require("./cast.model.js")(sequelize, Sequelize);
+db.review = require("./review.model.js")(sequelize, Sequelize);
 db.collection = require("./collection.model.js")(sequelize, Sequelize);
 
 db.genre.belongsToMany(db.movie, {
@@ -29,6 +30,14 @@ db.movie.belongsToMany(db.genre, {
   through: "movie_genres",
   foreignKey: "movieId",
   otherKey: "genreId",
+});
+
+db.review.belongsTo(db.movie, {
+  as: "movie_review",
+  foreignKey: "movieId",
+});
+db.movie.hasMany(db.review, {
+  as: "movie_reviews",
 });
 
 const MovieCast = sequelize.define("movie_casts", {
@@ -73,5 +82,13 @@ db.user.belongsToMany(db.role, {
   otherKey: "roleId",
 });
 db.ROLES = ["user", "admin", "moderator"];
+
+db.review.belongsTo(db.user, {
+  as: "user_review",
+  foreignKey: "userId",
+});
+db.user.hasMany(db.review, {
+  as: "user_reviews",
+});
 
 module.exports = db;

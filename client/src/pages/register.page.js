@@ -174,7 +174,7 @@ const Register = () => {
                 Already have an account? Click here to{" "}
                 <Link to={"/login"}>Login</Link>
               </span>
-              <div className="form-group  ms-auto">
+              <div className="form-group ms-auto">
                 <button
                   className="btn btn-primary primary-btn"
                   disabled={loading}

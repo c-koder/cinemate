@@ -7,6 +7,8 @@ const GenreController = require("./genre.controller.js");
 const Collection = db.collection;
 const CollectionController = require("./collection.controller.js");
 
+const User = db.user;
+const Review = db.review;
 const Cast = db.cast;
 
 const Op = db.Sequelize.Op;
@@ -91,7 +93,7 @@ exports.findAll = (req, res) => {
     orderByClause = [["updatedAt", "DESC"]];
   } else if (orderBy == 1) {
     orderByClause = [["createdAt", "ASC"]];
-  } else if (orderBy == 2) {
+  } else if (orderBy == 2 || title) {
     orderByClause = [["popularity", "DESC"]];
   } else if (orderBy == 3) {
     orderByClause = [["release_date", "DESC"]];
@@ -139,6 +141,24 @@ exports.findOne = (req, res) => {
       },
       {
         model: Genre,
+      },
+
+      {
+        model: Review,
+        as: "movie_reviews",
+        where: {
+          createdAt: {
+            [Op.gt]: new Date().setHours(0, 0, 0, 0),
+            [Op.lt]: new Date(),
+          },
+        },
+        include: {
+          model: User,
+          as: "user_review",
+          attributes: ["username", "profile_path"],
+          required: false,
+        },
+        required: false,
       },
     ],
   })

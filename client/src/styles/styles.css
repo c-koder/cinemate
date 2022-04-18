@@ -20,17 +20,15 @@
 
   --dark: #181818;
   --light: #fbfbfb;
-  --light-white: #ebebeb;
+  --light-white: #d8d8d8;
 
   --main-font-size: 16px;
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: "Poppins", sans-serif;
-  outline-width: 0;
 }
 
 *:disabled {
@@ -94,7 +92,7 @@ body {
   clear: both;
 }
 
-.form-horizontal .form-group label {
+.form-group label {
   color: var(--light);
   margin: 5px 0px;
   text-align: left;
@@ -102,22 +100,24 @@ body {
   font-weight: 600;
 }
 
-.form-horizontal .form-control {
-  color: var(--light);
-  background: var(--secondary);
+.form-control {
+  color: var(--light) !important;
+  background: var(--secondary) !important;
+  border: 1px solid transparent !important;
   height: 40px;
   border-radius: 5px;
   border: none;
   box-shadow: none !important;
 }
 
-.form-horizontal .form-control:disabled {
+.form-control:disabled {
   background: rgba(var(--secondary-rgb), 0.05);
   border-color: var(--secondary);
 }
 
-.form-horizontal .form-control:focus {
-  border-color: var(--primary);
+.form-control:hover,
+.form-control:focus {
+  border-color: var(--light-white) !important;
 }
 
 .form-container .signin-link {
@@ -138,9 +138,10 @@ body {
 }
 
 .primary-btn {
-  color: var(--light) !important;
+  color: var(--dark) !important;
   background: var(--primary);
   font-size: 16px;
+  font-weight: 500;
   padding: 8px 12px;
   border-radius: 5px;
   transition: 0.2s ease;

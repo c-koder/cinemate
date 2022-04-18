@@ -26,7 +26,7 @@ const Movie = ({ movie }) => {
           <h1>{movie.title}</h1>
           <span className="hstack">
             <h3>
-              {movie.release_date === "Invalid date"
+              {movie.release_date === null
                 ? movie.status
                 : moment(movie.release_date, "YYYY-MM-DD").format("YYYY")}
             </h3>

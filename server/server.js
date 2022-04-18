@@ -23,6 +23,7 @@ db.sequelize.sync().then(() => {
 require("./app/routes/movie.routes")(app);
 require("./app/routes/genre.routes")(app);
 require("./app/routes/cast.routes")(app);
+require("./app/routes/review.routes")(app);
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 

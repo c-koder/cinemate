@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../helpers/AuthContext";
 
+import { AuthContext } from "../helpers/AuthContext";
 import { logout } from "../services/auth.service";
 import ContextDropdown from "./contextDropdown.component";
 
@@ -12,7 +12,7 @@ const Navigation = () => {
     { id: 0, name: "Profile" },
     { id: 1, name: "Privacy" },
     { id: 2, name: "Settings" },
-    { id: 3, name: "Login" },
+    { id: 3, name: currentUser ? "Logout" : "Login" },
   ];
   const [value, setValue] = useState(undefined);
 
@@ -57,20 +57,19 @@ const Navigation = () => {
               <div className="navbar-nav ml-auto">
                 <li className="nav-item">
                   <Link to="/saved" className="nav-link">
-                    Saved
+                    Watchlist
                   </Link>
                 </li>
                 <li className="nav-item dropdown context-dropdown">
-                  <Link
-                    to="/profile"
+                  <a
+                    style={{ cursor: "pointer" }}
                     className="nav-link dropdown-toggle"
-                    id="movieSizeDropdown"
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
                     {currentUser.username}
-                  </Link>
+                  </a>
                   <ContextDropdown values={values} setValue={setValue} />
                 </li>
               </div>

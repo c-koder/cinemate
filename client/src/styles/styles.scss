@@ -278,16 +278,8 @@
   color: var(--light);
   border-radius: 10px;
 
-  .backdrop-img {
-    left: 0;
-    top: 0;
-    position: absolute;
-    width: 100vw !important;
-    filter: brightness(0.2);
-    z-index: -1;
-  }
-
   .poster-img {
+    text-align: center;
     overflow: hidden;
     border-radius: 10px;
     transition: 0.25s ease;
@@ -304,18 +296,63 @@
     }
   }
 
+  .actions {
+    margin: 20px 0px;
+
+    .action-btn {
+      border: none;
+      outline: none;
+      background: var(--primary);
+      font-size: 16px;
+      text-align: center;
+      box-sizing: border-box;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 0px 10px;
+      transition: 0.25s ease;
+      box-shadow: 0 0 25px 5px rgba(0, 0, 0, 0.25);
+
+      &:hover {
+        background: var(--primary-dark);
+      }
+
+      i {
+        color: var(--dark);
+        padding: 0px !important;
+        cursor: pointer;
+      }
+
+      i:last-child {
+        padding: 0px 0px 0px 20px;
+      }
+    }
+  }
+
   .details {
     padding: 20px 20px 20px 40px;
+
     .title {
-      color: white;
+      color: var(--light);
       font-size: 36px;
+      font-weight: 500;
+      letter-spacing: 1px;
     }
 
     .tagline {
-      color: #c7c1ba;
+      color: var(--light-white);
       font-size: 16px;
       max-width: 600px;
       font-weight: 300;
+    }
+
+    .star-rating {
+      margin: 0px 20px;
+
+      i {
+        color: var(--primary);
+        padding: 0px 3px;
+      }
     }
   }
 
@@ -324,7 +361,7 @@
     max-width: 600px;
     font-size: 16px;
     line-height: 26px;
-    color: #b1b0ac;
+    color: var(--light-white);
   }
 
   .genres {
@@ -351,6 +388,11 @@
       overflow: hidden;
       transition: 0.25s ease;
 
+      @media screen and (max-width: 992px) {
+        width: 50px;
+        height: 50px;
+      }
+
       &:hover {
         transform: scale(1.05);
       }
@@ -363,11 +405,46 @@
         object-fit: cover;
         transition: 0.25s ease;
         filter: brightness(0.85);
+
+        @media screen and (max-width: 992px) {
+          height: 50px;
+        }
       }
 
       &:hover {
         img {
           filter: brightness(1);
+        }
+      }
+    }
+  }
+
+  .review-container {
+    padding: 0px 0px 10px 0px;
+    max-width: 600px;
+    font-size: 16px;
+    line-height: 26px;
+    color: var(--light-white);
+
+    .reviews {
+      ul {
+        list-style: none;
+        padding-left: 0px;
+      }
+
+      li: {
+        padding: 5px 5px 5px 0px !important;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50px;
+        border: 1px solid var(--secondary);
+        margin-right: 10px;
+
+        img {
+          height: 40px;
         }
       }
     }
