@@ -152,12 +152,6 @@ exports.findOne = (req, res) => {
             [Op.lt]: new Date(),
           },
         },
-        include: {
-          model: User,
-          as: "user_review",
-          attributes: ["username", "profile_path"],
-          required: false,
-        },
         required: false,
       },
     ],

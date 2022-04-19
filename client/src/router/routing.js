@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 import Navigation from "../components/navigation.component";
 import { AuthContext } from "../helpers/AuthContext";
 
@@ -29,8 +34,16 @@ const Routing = () => {
           <Route path="/explore" element={<Movies />} />
           <Route path="/movie/:id" element={<MovieDetails />} />
           <Route path="/saved" />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/register" element={<Register />} />
+          <Route
+            exact
+            path="/login"
+            element={currentUser ? <Navigate to="/" /> : <Login />}
+          />
+          <Route
+            exact
+            path="/register"
+            element={currentUser ? <Navigate to="/" /> : <Register />}
+          />
           <Route exact path="/profile" element={<Profile />} />
         </Routes>
       </Router>

@@ -1,14 +1,18 @@
 import moment from "moment";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, createRef } from "react";
 import { useAnimation, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import ReactTooltip from "react-tooltip";
+import { Rating } from "react-simple-star-rating";
+
+import movieNotfound from "../assets/movie-notfound.svg";
+import castNotfound from "../assets/cast-notfound.svg";
 
 import { addReview } from "../services/review.service";
 import { AuthContext } from "../helpers/AuthContext";
 import { getMovieDetails } from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import MovieCast from "../components/movieCast.component";
 
 const MovieDetails = () => {
@@ -18,17 +22,25 @@ const MovieDetails = () => {
   const { id } = useParams();
 
   const [movie, setMovie] = useState(undefined);
+  const [reviews, setReviews] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
+  const reviewInput = createRef();
   const [review, setReview] = useState("");
+  const [rating, setRating] = useState(0);
+
+  const handleRating = (rate) => {
+    setRating(rate);
+  };
 
   useEffect(() => {
     setLoading(true);
 
     getMovieDetails(id)
       .then(async (response) => {
-        console.log(response.data);
         setMovie(response.data);
+        setReviews(response.data.movie_reviews);
         setLoading(false);
       })
       .catch((err) => console.log(err));
@@ -70,30 +82,33 @@ const MovieDetails = () => {
       content: review,
       movieId: movie.id,
       userId: currentUser.id,
+      rating: rating / 10,
       username: currentUser.username,
     }).then((response) => {
-      console.log(response.data.message);
+      setReview("");
+      setRating(0);
+      setReviews([response.data, ...reviews]);
     });
   };
 
   return (
     !loading && (
       <div
-        className="min-vh-100 d-flex flex-column justify-content-center align-items-center movie-details-container"
+        className="min-vh-100 d-flex flex-column justify-content-center align-items-center"
         style={{
-          position: "relative",
           backgroundImage: `url(${`https://image.tmdb.org/t/p/original${movie.backdrop_path}`})`,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
+          backgroundAttachment: "fixed",
         }}
       >
         <div
-          className="container"
+          className="min-vh-100 container"
           style={{
             backgroundColor: "rgba(24, 24, 24, 0.9)",
             padding: 40,
-            borderRadius: 10,
+            paddingTop: 100,
           }}
         >
           <ReactTooltip
@@ -103,23 +118,44 @@ const MovieDetails = () => {
             arrowColor="transparent"
             delayShow={0}
           />
-          <div className="movie-card">
+          <motion.div
+            ref={ref}
+            animate={controls}
+            initial="hidden"
+            variants={viewAnim}
+            className="movie-card"
+          >
             <div className="row justify-content-center">
               <div className={`col${width > 992 && "-3"}`}>
                 <div className="poster-img">
                   <img
                     src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    onError={(e) => (
+                      (e.target.onerror = null), (e.target.src = movieNotfound)
+                    )}
                     alt="poster"
                   />
                 </div>
                 <div className="hstack actions justify-content-center">
-                  <button className="action-btn" data-tip={"Add to watchlist"}>
+                  <button
+                    className="action-btn"
+                    data-tip={`${
+                      !currentUser ? "Login to a" : "A"
+                    }dd to watchlist`}
+                  >
                     <i className="bi bi-bookmark-fill"></i>
                   </button>
-                  <button className="action-btn" data-tip={"I like it"}>
+                  <button
+                    className="action-btn"
+                    data-tip={`${!currentUser ? "Login to like" : "I like it"}`}
+                  >
                     <i className="bi bi-emoji-smile-fill"></i>
                   </button>
-                  <button className="action-btn" data-tip={"Review"}>
+                  <button
+                    className="action-btn"
+                    onClick={() => reviewInput.current.focus()}
+                    data-tip={`${!currentUser ? "Login to review" : "Review"}`}
+                  >
                     <i className="bi bi-chat-fill"></i>
                   </button>
                   <button className="action-btn" data-tip={"Share"}>
@@ -170,9 +206,9 @@ const MovieDetails = () => {
                   <p>{movie.overview}</p>
                   <div className="hstack justify-content-start avatars">
                     {movie.casts.map((cast, i) => {
-                      if (i < 5)
+                      if (i < 7)
                         return (
-                          <div key={i}>
+                          <div className="row" key={i}>
                             <button
                               type="button"
                               style={{ all: "unset" }}
@@ -185,6 +221,10 @@ const MovieDetails = () => {
                               >
                                 <img
                                   src={`https://image.tmdb.org/t/p/w500${cast.profile_path}`}
+                                  onError={(e) => (
+                                    (e.target.onerror = null),
+                                    (e.target.src = castNotfound)
+                                  )}
                                   alt="avatar"
                                 />
                               </div>
@@ -202,10 +242,27 @@ const MovieDetails = () => {
                       } align-items-end`}
                     >
                       <div className="form-group w-100">
-                        <label>Leave a review</label>
+                        <div className="hstack">
+                          <label>Leave a review</label>
+                          <div style={{ marginBottom: -2, marginLeft: 10 }}>
+                            <Rating
+                              onClick={handleRating}
+                              ratingValue={rating}
+                              readonly={!currentUser}
+                              fillColor="var(--primary)"
+                              emptyColor="var(--primary)"
+                              fullIcon={<i className="bi bi-star-fill"></i>}
+                              emptyIcon={<i className="bi bi-star"></i>}
+                              allowHalfIcon={true}
+                              transition={true}
+                            />
+                          </div>
+                        </div>
+
                         <textarea
+                          ref={reviewInput}
                           className="form-control"
-                          style={{ maxHeight: 100 }}
+                          style={{ maxHeight: 150 }}
                           disabled={loading || !currentUser}
                           placeholder={
                             currentUser
@@ -213,7 +270,9 @@ const MovieDetails = () => {
                               : "Login to leave a review"
                           }
                           value={review}
-                          onChange={(e) => setReview(e.target.value)}
+                          onChange={(e) => {
+                            setReview(e.target.value.split("\\n").join("\n"));
+                          }}
                         />
                       </div>
                       <div
@@ -225,7 +284,12 @@ const MovieDetails = () => {
                       >
                         <button
                           className="btn btn-primary primary-btn"
-                          disabled={loading || review === "" || !currentUser}
+                          disabled={
+                            loading ||
+                            rating === 0 ||
+                            review === "" ||
+                            !currentUser
+                          }
                           onClick={handleAddReview}
                         >
                           {loading && (
@@ -238,25 +302,63 @@ const MovieDetails = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="reviews vstack my-4">
-                      <label>Comments (Last 24h)</label>
-                      <hr />
+                    <br />
+                    <span
+                      style={{
+                        color: "var(--light)",
+                        fontSize: 16,
+                        fontWeight: 600,
+                      }}
+                    >
+                      Reviews (Last 24h)
+                    </span>
+                    <hr style={{ margin: "5px 0px" }} />
+                    <div className="reviews vstack">
                       <ul>
-                        {movie.movie_reviews &&
-                          movie.movie_reviews.map((review) => {
+                        {reviews &&
+                          reviews.map((review) => {
                             return (
                               <li key={review.id}>
-                                <div className="hstack align-items-start">
-                                  <div className="user-avatar">
-                                    <img
-                                      src={review.user_review.profile_path}
-                                    />
+                                <div className="vstack">
+                                  <div className="hstack">
+                                    <div
+                                      style={{ fontSize: 14, marginBottom: 0 }}
+                                    >
+                                      Review by{" "}
+                                      <Link
+                                        to={`/${review.userId}`}
+                                        className="user-link"
+                                        style={{
+                                          all: "unset",
+                                        }}
+                                      >
+                                        {review.username}
+                                      </Link>
+                                    </div>
+                                    <div
+                                      className="star-rating"
+                                      style={{
+                                        fontSize: 14,
+                                        fontWeight: 500,
+                                        marginLeft: 5,
+                                      }}
+                                    >
+                                      <i className="bi bi-star-fill"></i>
+                                      <span>{review.rating}/10</span>
+                                    </div>
                                   </div>
-                                  <div className="vstack">
-                                    <div>{review.user_review.username}</div>
-                                    <div>{review.content}</div>
+
+                                  <div
+                                    style={{
+                                      fontSize: 14,
+                                      lineHeight: 1.5,
+                                      whiteSpace: "pre-wrap",
+                                    }}
+                                  >
+                                    {review.content}
                                   </div>
                                 </div>
+                                <hr style={{ margin: "5px 0px" }} />
                               </li>
                             );
                           })}
@@ -266,7 +368,7 @@ const MovieDetails = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     )

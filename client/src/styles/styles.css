@@ -32,7 +32,12 @@
 }
 
 *:disabled {
-  cursor: not-allowed;
+  cursor: not-allowed !important;
+}
+
+svg,
+img {
+  pointer-events: none;
 }
 
 body {
@@ -156,7 +161,7 @@ body {
 }
 
 .primary-btn:disabled {
-  cursor: not-allowed;
+  cursor: not-allowed !important;
   background: var(--primary-dark);
 }
 
@@ -223,8 +228,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background-color: transparent;
 }
 

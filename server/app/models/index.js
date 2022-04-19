@@ -48,6 +48,7 @@ const MovieCast = sequelize.define("movie_casts", {
     allowNull: false,
   },
   order: { type: Sequelize.INTEGER },
+  character: { type: Sequelize.STRING },
 });
 
 db.cast.belongsToMany(db.movie, {

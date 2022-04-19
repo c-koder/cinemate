@@ -1,6 +1,5 @@
 const db = require("../models");
 const Review = db.review;
-const Movie = db.movie;
 const User = db.user;
 
 const Op = db.Sequelize.Op;
@@ -14,8 +13,8 @@ exports.create = async (req, res) => {
   }
 
   Review.create(req.body.params)
-    .then((comment) => {
-      res.send({ message: "Review added successfully." });
+    .then((review) => {
+      res.send(review);
     })
     .catch((err) => {
       res.status(500).send({

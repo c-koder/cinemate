@@ -1,9 +1,13 @@
 import moment from "moment";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import notfound from "../assets/notfound.png";
+import notfound from "../assets/movie-notfound.svg";
 
 const Movie = ({ movie }) => {
+  const [imageError, setImageError] = useState(false);
+
+  console.log(imageError);
   return (
     <div className="col-md-auto movie-container">
       <Link to={`/movie/${movie.id}`}>
@@ -18,11 +22,16 @@ const Movie = ({ movie }) => {
           <img
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             onError={(e) => (
-              (e.target.onerror = null), (e.target.src = notfound)
+              (e.target.onerror = null),
+              (e.target.src = notfound),
+              setImageError(true)
             )}
           />
         </div>
-        <div className="movie-text">
+        <div
+          className="movie-text"
+          style={{ backgroundImage: imageError && "none" }}
+        >
           <h1>{movie.title}</h1>
           <span className="hstack">
             <h3>

@@ -7,9 +7,6 @@ module.exports = (sequelize, Sequelize) => {
     name: {
       type: Sequelize.STRING,
     },
-    character: {
-      type: Sequelize.STRING,
-    },
     popularity: {
       type: Sequelize.FLOAT,
     },
