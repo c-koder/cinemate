@@ -48,9 +48,6 @@ module.exports = (sequelize, Sequelize) => {
     popularity: {
       type: Sequelize.FLOAT,
     },
-    bookmarked: {
-      type: Sequelize.STRING,
-    },
   });
   return Movie;
 };

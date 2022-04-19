@@ -15,7 +15,7 @@ import {
 } from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import axios from "axios";
-import { addCast } from "../services/cast.service";
+import { addCast, getMovieCasts, updateCast } from "../services/cast.service";
 
 const Movies = () => {
   const { width } = useWindowDimensions();
@@ -247,13 +247,39 @@ const Movies = () => {
         // console.log(count);
         // }
 
-        setMovies(response.data.movies);
-        setPageCount(response.data.totalPages);
+        // setMovies(response.data.movies);
+        // setPageCount(response.data.totalPages);
         setLoading(false);
       })
       .catch((err) => console.log(err));
     // }, []);
   }, [currentPage, pageSize, genre, year, orderBy, ratedBy]);
+
+  // useEffect(() => {
+  //   11500
+  //   getMovieCasts().then(async (response) => {
+  //     let count = 0;
+  //     for (count; count < response.data.length; count++) {
+  //       const movieCast = response.data[count];
+  //       await axios
+  //         .get(
+  //           `https:api.themoviedb.org/3/movie/${movieCast.movieId}/credits?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
+  //         )
+  //         .then(async (tmdbResponse) => {
+  //           let data = tmdbResponse.data.cast.slice(0, 10);
+  //           for (let j = 0; j < data.length; j++) {
+  //             const item = data[j];
+  //             if (item.id === movieCast.castId)
+  //               await updateCast({
+  //                 character: item.character,
+  //                 id: movieCast.id,
+  //               });
+  //           }
+  //         });
+  //       console.log(count);
+  //     }
+  //   });
+  // }, []);
 
   useEffect(() => {
     getGenres().then((response) => {

@@ -1,4 +1,4 @@
-import http from "../constants/http-common";
+import http from "../common/http-common";
 
 export const login = async (username, password) => {
   const response = await http.post("/auth/signin", {

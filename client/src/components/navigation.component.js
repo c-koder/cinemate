@@ -2,11 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { AuthContext } from "../helpers/AuthContext";
-import { logout } from "../services/auth.service";
 import ContextDropdown from "./contextDropdown.component";
 
-const Navigation = () => {
-  const { currentUser, setCurrentUser } = useContext(AuthContext);
+const Navigation = ({ handleLogout }) => {
+  const { currentUser } = useContext(AuthContext);
 
   const values = [
     { id: 0, name: "Profile" },
@@ -15,11 +14,6 @@ const Navigation = () => {
     { id: 3, name: currentUser ? "Logout" : "Login" },
   ];
   const [value, setValue] = useState(undefined);
-
-  const handleLogout = () => {
-    setCurrentUser(undefined);
-    logout();
-  };
 
   useEffect(() => {
     if (value && value.id === 3) {

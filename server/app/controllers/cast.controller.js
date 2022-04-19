@@ -1,6 +1,7 @@
 const db = require("../models");
 const Cast = db.cast;
 const Movie = db.movie;
+const MovieCast = db.movieCast;
 
 exports.create = async (req, res) => {
   if (!req.body) {
@@ -31,4 +32,40 @@ exports.create = async (req, res) => {
     });
     res.send({ message: "Movie Cast added successfully." });
   });
+};
+
+exports.findAll = (req, res) => {
+  MovieCast.findAll()
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving movie casts.",
+      });
+    });
+};
+
+exports.update = (req, res) => {
+  const id = req.params.id;
+  MovieCast.update(req.body.params, {
+    where: { id: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "Movie cast was updated successfully.",
+        });
+      } else {
+        res.send({
+          message: `Cannot update movie cast with id=${id}. Maybe movie cast was not found or req.body is empty!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error updating Movie with id=" + id,
+      });
+    });
 };

@@ -216,6 +216,8 @@ body {
 }
 
 .tooltip {
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 400;
   color: var(--light) !important;
   background: var(--dark) !important;
   font-size: 14px !important;

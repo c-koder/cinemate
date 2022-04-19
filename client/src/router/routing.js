@@ -8,6 +8,7 @@ import {
 import Navigation from "../components/navigation.component";
 import { AuthContext } from "../helpers/AuthContext";
 
+import EventBus from "../common/EventBus";
 import Home from "../pages/home.page";
 import Login from "../pages/login.page";
 import MovieDetails from "../pages/movieDetails.page";
@@ -15,7 +16,7 @@ import Movies from "../pages/movies.page";
 import Profile from "../pages/profile.page";
 import Register from "../pages/register.page";
 
-import { getCurrentUser } from "../services/auth.service";
+import { getCurrentUser, logout } from "../services/auth.service";
 
 const Routing = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -23,12 +24,23 @@ const Routing = () => {
 
   useEffect(() => {
     user && setCurrentUser(user);
+
+    EventBus.on("logout", () => {
+      handleLogout();
+    });
+
+    return () => EventBus.remove("logout");
   }, []);
+
+  const handleLogout = () => {
+    setCurrentUser(undefined);
+    logout();
+  };
 
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
       <Router>
-        <Navigation />
+        <Navigation handleLogout={handleLogout} />
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/explore" element={<Movies />} />

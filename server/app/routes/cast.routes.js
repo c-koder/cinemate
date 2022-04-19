@@ -10,7 +10,9 @@ module.exports = function (app) {
   });
   // app.get("/api/cast/", cast.findAll);
   // app.get("/api/cast/:id", cast.findOne);
+  app.get("/api/moviecast", cast.findAll);
   app.post("/api/cast/", cast.create);
+  app.put("/api/cast/:id", cast.update);
   // app.put(
   //   "/api/cast/:id",
   //   [authJwt.verifyToken, authJwt.isModerator],

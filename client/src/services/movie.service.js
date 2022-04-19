@@ -1,4 +1,4 @@
-import http from "../constants/http-common";
+import http from "../common/http-common";
 import authHeader from "./auth-header";
 
 export const getMovies = (params) => {
@@ -11,6 +11,10 @@ export const getMovieDetails = (id) => {
 
 export const addMovie = (params) => {
   return http.post("/movies", { params });
+};
+
+export const addToWatchlist = (params) => {
+  return http.post("/movies/bookmark", { params });
 };
 
 export const updateMovie = (params) => {

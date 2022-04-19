@@ -40,22 +40,13 @@ db.movie.hasMany(db.review, {
   as: "movie_reviews",
 });
 
-const MovieCast = sequelize.define("movie_casts", {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false,
-  },
-  order: { type: Sequelize.INTEGER },
-  character: { type: Sequelize.STRING },
-});
+db.movieCast = require("./movieCast.model.js")(sequelize, Sequelize);
 
 db.cast.belongsToMany(db.movie, {
-  through: { model: MovieCast, unique: false },
+  through: { model: db.movieCast, unique: false },
 });
 db.movie.belongsToMany(db.cast, {
-  through: { model: MovieCast, unique: false },
+  through: { model: db.movieCast, unique: false },
 });
 
 db.collection.belongsToMany(db.movie, {
@@ -71,6 +62,18 @@ db.movie.belongsToMany(db.collection, {
 
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
+db.watchlist = require("./watchlist.model.js")(sequelize, Sequelize);
+
+db.movie.belongsToMany(db.user, {
+  through: db.watchlist,
+  foreignKey: "movieId",
+  otherKey: "userId",
+});
+db.user.belongsToMany(db.movie, {
+  through: db.watchlist,
+  foreignKey: "userId",
+  otherKey: "movieId",
+});
 
 db.role.belongsToMany(db.user, {
   through: "user_roles",

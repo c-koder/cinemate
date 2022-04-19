@@ -1,4 +1,4 @@
-import http from "../constants/http-common";
+import http from "../common/http-common";
 import authHeader from "./auth-header";
 
 export const getReviews = (params) => {

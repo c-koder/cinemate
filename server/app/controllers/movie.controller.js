@@ -7,6 +7,7 @@ const GenreController = require("./genre.controller.js");
 const Collection = db.collection;
 const CollectionController = require("./collection.controller.js");
 
+const Watchlist = db.watchlist;
 const User = db.user;
 const Review = db.review;
 const Cast = db.cast;
@@ -142,7 +143,6 @@ exports.findOne = (req, res) => {
       {
         model: Genre,
       },
-
       {
         model: Review,
         as: "movie_reviews",
@@ -152,6 +152,7 @@ exports.findOne = (req, res) => {
             [Op.lt]: new Date(),
           },
         },
+        order: [["createdAt", "DESC"]],
         required: false,
       },
     ],
@@ -170,6 +171,30 @@ exports.findOne = (req, res) => {
         message: "Error retrieving Movie with id=" + id,
       });
     });
+};
+
+exports.addBookmark = async (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+
+  const [watchlist, created] = await Watchlist.findOrCreate({
+    where: {
+      movieId: req.body.params.movieId,
+      userId: req.body.params.userId,
+    },
+  });
+
+  if (created) {
+    res.send({ message: "Movie added to your watchlist." });
+  } else {
+    res.status(400).send({
+      message: "Movie already in your watchlist.",
+    });
+  }
 };
 
 exports.update = (req, res) => {

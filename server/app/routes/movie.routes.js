@@ -11,6 +11,7 @@ module.exports = function (app) {
   app.get("/api/movies/", movies.findAll);
   app.get("/api/movies/:id", movies.findOne);
   app.post("/api/movies/", movies.create);
+  app.post("/api/movies/bookmark", movies.addBookmark);
   app.put(
     "/api/movies/:id",
     [authJwt.verifyToken, authJwt.isModerator],

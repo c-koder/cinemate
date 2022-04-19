@@ -7,7 +7,6 @@ import notfound from "../assets/movie-notfound.svg";
 const Movie = ({ movie }) => {
   const [imageError, setImageError] = useState(false);
 
-  console.log(imageError);
   return (
     <div className="col-md-auto movie-container">
       <Link to={`/movie/${movie.id}`}>

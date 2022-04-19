@@ -4,13 +4,15 @@ import { useAnimation, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import ReactTooltip from "react-tooltip";
 import { Rating } from "react-simple-star-rating";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import movieNotfound from "../assets/movie-notfound.svg";
 import castNotfound from "../assets/cast-notfound.svg";
 
 import { addReview } from "../services/review.service";
 import { AuthContext } from "../helpers/AuthContext";
-import { getMovieDetails } from "../services/movie.service";
+import { addToWatchlist, getMovieDetails } from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { Link, useParams } from "react-router-dom";
 import MovieCast from "../components/movieCast.component";
@@ -34,12 +36,26 @@ const MovieDetails = () => {
     setRating(rate);
   };
 
+  const toastOptions = {
+    position: "top-center",
+    autoClose: 5000,
+    hideProgressBar: true,
+    theme: "dark",
+    closeOnClick: false,
+    pauseOnHover: true,
+    draggable: true,
+  };
+
+  const notifyError = (message) => toast.error(message, toastOptions);
+  const notifySuccess = (message) => toast.success(message, toastOptions);
+
   useEffect(() => {
     setLoading(true);
 
     getMovieDetails(id)
       .then(async (response) => {
         setMovie(response.data);
+        console.log(response.data);
         setReviews(response.data.movie_reviews);
         setLoading(false);
       })
@@ -91,6 +107,19 @@ const MovieDetails = () => {
     });
   };
 
+  const handleAddToWatchlist = () => {
+    if (currentUser) {
+      addToWatchlist({ movieId: movie.id, userId: currentUser.id })
+        .then((response) => {
+          notifySuccess(response.data.message);
+        })
+        .catch((err) => {
+          console.log(err);
+          notifyError(err.response.data.message);
+        });
+    }
+  };
+
   return (
     !loading && (
       <div
@@ -103,6 +132,7 @@ const MovieDetails = () => {
           backgroundAttachment: "fixed",
         }}
       >
+        <ToastContainer />
         <div
           className="min-vh-100 container"
           style={{
@@ -117,6 +147,7 @@ const MovieDetails = () => {
             className="tooltip"
             arrowColor="transparent"
             delayShow={0}
+            html={true}
           />
           <motion.div
             ref={ref}
@@ -142,6 +173,7 @@ const MovieDetails = () => {
                     data-tip={`${
                       !currentUser ? "Login to a" : "A"
                     }dd to watchlist`}
+                    onClick={handleAddToWatchlist}
                   >
                     <i className="bi bi-bookmark-fill"></i>
                   </button>
@@ -217,7 +249,8 @@ const MovieDetails = () => {
                             >
                               <div
                                 className="avatar-container"
-                                data-tip={cast.name}
+                                data-tip={`<div style='text-align: center;'><span style='font-weight: bold;'>${cast.name}</span><br/>as ${cast.movie_casts.character}
+                                  </div>`}
                               >
                                 <img
                                   src={`https://image.tmdb.org/t/p/w500${cast.profile_path}`}
@@ -284,12 +317,7 @@ const MovieDetails = () => {
                       >
                         <button
                           className="btn btn-primary primary-btn"
-                          disabled={
-                            loading ||
-                            rating === 0 ||
-                            review === "" ||
-                            !currentUser
-                          }
+                          disabled={loading || rating === 0 || !currentUser}
                           onClick={handleAddReview}
                         >
                           {loading && (
@@ -316,52 +344,59 @@ const MovieDetails = () => {
                     <div className="reviews vstack">
                       <ul>
                         {reviews &&
-                          reviews.map((review) => {
-                            return (
-                              <li key={review.id}>
-                                <div className="vstack">
-                                  <div className="hstack">
-                                    <div
-                                      style={{ fontSize: 14, marginBottom: 0 }}
-                                    >
-                                      Review by{" "}
-                                      <Link
-                                        to={`/${review.userId}`}
-                                        className="user-link"
+                          reviews
+                            .sort((a, b) =>
+                              a.createdAt < b.createdAt ? 1 : -1
+                            )
+                            .map((review) => {
+                              return (
+                                <li key={review.id}>
+                                  <div className="vstack">
+                                    <div className="hstack">
+                                      <div
                                         style={{
-                                          all: "unset",
+                                          fontSize: 14,
+                                          marginBottom: 0,
                                         }}
                                       >
-                                        {review.username}
-                                      </Link>
+                                        Review by{" "}
+                                        <Link
+                                          to={`/${review.userId}`}
+                                          className="user-link"
+                                          style={{
+                                            all: "unset",
+                                          }}
+                                        >
+                                          {review.username}
+                                        </Link>
+                                      </div>
+                                      <div
+                                        className="star-rating"
+                                        style={{
+                                          fontSize: 14,
+                                          fontWeight: 500,
+                                          marginLeft: 5,
+                                        }}
+                                      >
+                                        <i className="bi bi-star-fill"></i>
+                                        <span>{review.rating}/10</span>
+                                      </div>
                                     </div>
+
                                     <div
-                                      className="star-rating"
                                       style={{
                                         fontSize: 14,
-                                        fontWeight: 500,
-                                        marginLeft: 5,
+                                        lineHeight: 1.5,
+                                        whiteSpace: "pre-wrap",
                                       }}
                                     >
-                                      <i className="bi bi-star-fill"></i>
-                                      <span>{review.rating}/10</span>
+                                      {review.content}
                                     </div>
                                   </div>
-
-                                  <div
-                                    style={{
-                                      fontSize: 14,
-                                      lineHeight: 1.5,
-                                      whiteSpace: "pre-wrap",
-                                    }}
-                                  >
-                                    {review.content}
-                                  </div>
-                                </div>
-                                <hr style={{ margin: "5px 0px" }} />
-                              </li>
-                            );
-                          })}
+                                  <hr style={{ margin: "5px 0px" }} />
+                                </li>
+                              );
+                            })}
                       </ul>
                     </div>
                   </div>
