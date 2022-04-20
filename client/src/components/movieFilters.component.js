@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import MovieSizeDropdown from "./movieFilterDropdown.component";
 
 const MovieFilters = (props) => {
+  const navigate = useNavigate();
+
   return (
     <div className="filter-container">
       <div className="row">
@@ -19,15 +22,29 @@ const MovieFilters = (props) => {
               onChange={(e) => props.setSearchTitle(e.target.value)}
             />
           </div>
+          {props.searchTitle !== "" && (
+            <div className="form-group" style={{ marginLeft: 20 }}>
+              <button
+                className="btn btn-primary primary-btn"
+                style={{ width: 40 }}
+                onClick={() => {
+                  navigate(`/explore`);
+                  props.setSearchTitle("");
+                }}
+              >
+                <i class="bi bi-x-circle" style={{ marginRight: 0 }}></i>
+              </button>
+            </div>
+          )}
           <div className="form-group" style={{ marginLeft: 20 }}>
             <button
               className="btn btn-primary primary-btn"
               style={{ width: 40 }}
               onClick={() => {
-                props.setSearchTitle("");
+                navigate(`/explore?title=${props.searchTitle}`);
               }}
             >
-              <i className="bi bi-x-circle" style={{ marginRight: 0 }}></i>
+              <i class="bi bi-search" style={{ marginRight: 0 }}></i>
             </button>
           </div>
         </div>

@@ -249,7 +249,12 @@ const MovieDetails = () => {
                             >
                               <div
                                 className="avatar-container"
-                                data-tip={`<div style='text-align: center;'><span style='font-weight: bold;'>${cast.name}</span><br/>as ${cast.movie_casts.character}
+                                data-tip={`<div style='text-align: center;'><span style='font-weight: bold;'>${
+                                  cast.name
+                                }</span><br/> ${
+                                  cast.movie_casts.character !== null ?
+                                  `as ${cast.movie_casts.character}` : ""
+                                }
                                   </div>`}
                               >
                                 <img

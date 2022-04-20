@@ -6,18 +6,12 @@ import Pagination from "react-responsive-pagination";
 
 import MovieFilters from "../components/movieFilters.component";
 import MovieList from "../components/movieList.component";
-import {
-  addMovie,
-  deleteMovie,
-  getGenres,
-  getMovies,
-  updateMovie,
-} from "../services/movie.service";
+import { getGenres, getMovies } from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
-import axios from "axios";
-import { addCast, getMovieCasts, updateCast } from "../services/cast.service";
+import { useSearchParams } from "react-router-dom";
 
 const Movies = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { width } = useWindowDimensions();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
@@ -108,92 +102,21 @@ const Movies = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   let page = 1;
-  //   const timer = setInterval(() => {
-  //     page <= 200 &&
-  //       axios
-  //         .get(
-  //           `https://api.themoviedb.org/3/movie/popular?api_key=08a4d48a2085c0e4a8d727d79ddf139e&language=en-US&page=${page}`
-  //         )
-  //         .then((response) => {
-  //           response.data.results.map((item) => {
-  //             let movie = {
-  //               id: item.id,
-  //               title: item.title,
-  //               release_date:item.release_date,
-  //               status: "",
-  //               runtime: 0,
-  //               original_language: item.original_language,
-  //               homepage: "",
-  //               budget: 0,
-  //               revenue: 0,
-  //               imdb_id: "",
-  //               overview: item.overview,
-  //               poster_path: item.poster_path,
-  //               vote_average: item.vote_average,
-  //               vote_count: item.vote_count,
-  //               popularity: 0,
-  //             };
-  //             axios
-  //               .get(
-  //                 `https://api.themoviedb.org/3/movie/${item.id}?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
-  //               )
-  //               .then((response) => {
-  //                 movie.status = response.data.status;
-  //                 movie.runtime = response.data.runtime;
-  //                 movie.homepage = response.data.homepage;
-  //                 movie.tagline = response.data.tagline;
-  //                 movie.budget = response.data.budget;
-  //                 movie.revenue = response.data.revenue;
-  //                 movie.imdb_id = response.data.imdb_id;
-  //                 movie.popularity = response.data.popularity;
-  //                 if (response.data.belongs_to_collection) {
-  //                   movie.belongs_to_collection = {
-  //                     id: response.data.belongs_to_collection.id,
-  //                     name: response.data.belongs_to_collection.name,
-  //                     poster_path:
-  //                       response.data.belongs_to_collection.poster_path,
-  //                     backdrop_path:
-  //                       response.data.belongs_to_collection.backdrop_path,
-  //                   };
-  //                 }
-  //                 movie.genres = response.data.genres;
-  //                 console.log(movie);
-  //                 addMovie(movie);
-  //               });
-  //           });
-  //           page++;
-  //         });
-  //   }, 1000);
-  //   return () => clearInterval(timer);
-  // }, []);
-
   useEffect(() => {
-    let timer = setTimeout(
-      () => {
-        setLoading(true);
-        const params = getRequestParams(searchTitle);
-        getMovies(params)
-          .then(async (response) => {
-            setMovies(response.data.movies);
-            setPageCount(response.data.totalPages);
-            setLoading(false);
-          })
-          .catch((err) => console.log(err));
-      },
-      searchTitle !== "" ? 1000 : 0
-    );
+    let title = "";
+    if (searchParams.get("title") !== null) {
+      title = searchParams.get("title");
+    } else {
+      title = "";
+    }
+    setSearchTitle(title);
+    fetchMovies(title);
+  }, [searchParams, currentPage, pageSize, genre, year, orderBy, ratedBy]);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [searchTitle]);
-
-  useEffect(() => {
+  const fetchMovies = (title) => {
     setLoading(true);
-    const params = getRequestParams(
-      searchTitle,
+    const params = requestParams(
+      searchTitle || title,
       currentPage,
       pageSize,
       genre,
@@ -204,82 +127,12 @@ const Movies = () => {
 
     getMovies(params)
       .then(async (response) => {
-        // let count = 0;
-        // for (count; count < response.data.length; count++) {
-        //   const movie = response.data[count];
-        //   await axios
-        //     .get(
-        //       `https:api.themoviedb.org/3/movie/${movie.id}/credits?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
-        //     )
-        //     .then(async (tmdbResponse) => {
-        //       let data = tmdbResponse.data.cast.slice(0, 10);
-        //       for (let j = 0; j < data.length; j++) {
-        //         const item = data[j];
-        //         await addCast({
-        //           movie_id: movie.id,
-        //           id: item.id,
-        //           character: item.character,
-        //           name: item.name,
-        //           order: item.order,
-        //           popularity: item.popularity,
-        //           profile_path: item.profile_path,
-        //         });
-        //       }
-
-        // for (let j = 0; j < response.data.length; j++) {
-        //   const item = response.data[j];
-        //   await updateMovie({
-        //     id: movie.id,
-        //     release_date: item.release_date,
-        //     backdrop_path: item.backdrop_path,
-        //     status: item.status,
-        //     homepage: item.homepage,
-        //     budget: item.budget,
-        //     revenue: item.revenue,
-        //     vote_average: item.vote_average,
-        //     vote_count: item.vote_count,
-        //     popularity: item.popularity,
-        //   }).then((updateResponse) =>
-        //     console.log(updateResponse.data.message)
-        //   );
-        // }
-
-        // console.log(count);
-        // }
-
-        // setMovies(response.data.movies);
-        // setPageCount(response.data.totalPages);
+        setMovies(response.data.movies);
+        setPageCount(response.data.totalPages);
         setLoading(false);
       })
       .catch((err) => console.log(err));
-    // }, []);
-  }, [currentPage, pageSize, genre, year, orderBy, ratedBy]);
-
-  // useEffect(() => {
-  //   11500
-  //   getMovieCasts().then(async (response) => {
-  //     let count = 0;
-  //     for (count; count < response.data.length; count++) {
-  //       const movieCast = response.data[count];
-  //       await axios
-  //         .get(
-  //           `https:api.themoviedb.org/3/movie/${movieCast.movieId}/credits?api_key=08a4d48a2085c0e4a8d727d79ddf139e`
-  //         )
-  //         .then(async (tmdbResponse) => {
-  //           let data = tmdbResponse.data.cast.slice(0, 10);
-  //           for (let j = 0; j < data.length; j++) {
-  //             const item = data[j];
-  //             if (item.id === movieCast.castId)
-  //               await updateCast({
-  //                 character: item.character,
-  //                 id: movieCast.id,
-  //               });
-  //           }
-  //         });
-  //       console.log(count);
-  //     }
-  //   });
-  // }, []);
+  };
 
   useEffect(() => {
     getGenres().then((response) => {
@@ -292,7 +145,7 @@ const Movies = () => {
     });
   }, []);
 
-  const getRequestParams = (
+  const requestParams = (
     searchTitle,
     page,
     pageSize,
