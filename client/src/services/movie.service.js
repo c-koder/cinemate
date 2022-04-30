@@ -5,8 +5,16 @@ export const getMovies = (params) => {
   return http.get("/movies", { params });
 };
 
-export const getMovieDetails = (id) => {
-  return http.get(`/movies/${id}`);
+export const getPopularMovies = (params) => {
+  return http.get("/movies/popular", { params });
+};
+
+export const getMovieDetails = (params) => {
+  return http.get(`/movies/${params.movieId}`, { params });
+};
+
+export const getWatchlist = (id) => {
+  return http.get(`/movies/watchlist/${id}`);
 };
 
 export const addMovie = (params) => {
@@ -15,6 +23,10 @@ export const addMovie = (params) => {
 
 export const addToWatchlist = (params) => {
   return http.post("/movies/bookmark", { params });
+};
+
+export const addToLiked = (params) => {
+  return http.post("/movies/like", { params });
 };
 
 export const updateMovie = (params) => {

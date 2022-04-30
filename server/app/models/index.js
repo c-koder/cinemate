@@ -63,14 +63,30 @@ db.movie.belongsToMany(db.collection, {
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.watchlist = require("./watchlist.model.js")(sequelize, Sequelize);
+db.liked = require("./liked.model.js")(sequelize, Sequelize);
 
 db.movie.belongsToMany(db.user, {
   through: db.watchlist,
+  as: "user_watchlist",
   foreignKey: "movieId",
   otherKey: "userId",
 });
 db.user.belongsToMany(db.movie, {
   through: db.watchlist,
+  as: "user_watchlist",
+  foreignKey: "userId",
+  otherKey: "movieId",
+});
+
+db.movie.belongsToMany(db.user, {
+  through: db.liked,
+  as: "user_liked",
+  foreignKey: "movieId",
+  otherKey: "userId",
+});
+db.user.belongsToMany(db.movie, {
+  through: db.liked,
+  as: "user_liked",
   foreignKey: "userId",
   otherKey: "movieId",
 });

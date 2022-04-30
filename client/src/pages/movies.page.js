@@ -301,7 +301,7 @@ const Movies = () => {
             onPageChange={(e) => setCurrentPage(e)}
             maxWidth={width > 992 ? 600 : width > 400 ? 400 : 300}
           />
-          <MovieList movies={movies} />
+          <MovieList movies={movies} perRow={3} />
           <br />
           <Pagination
             current={currentPage}

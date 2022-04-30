@@ -24,7 +24,11 @@ const Navigation = ({ handleLogout }) => {
   return (
     <nav className="navbar navbar-dark navbar-expand-md bg-dark justify-content-center fixed-top">
       <div className="container">
-        <Link to="/" className="navbar-brand d-flex me-auto">
+        <Link
+          to="/"
+          className="navbar-brand d-flex me-auto"
+          style={{ cursor: "pointer" }}
+        >
           Cinemate
         </Link>
         <button
@@ -50,7 +54,7 @@ const Navigation = ({ handleLogout }) => {
             {currentUser ? (
               <div className="navbar-nav ml-auto">
                 <li className="nav-item">
-                  <Link to="/saved" className="nav-link">
+                  <Link to="/watchlist" className="nav-link">
                     Watchlist
                   </Link>
                 </li>

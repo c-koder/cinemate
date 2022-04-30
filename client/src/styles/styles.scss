@@ -7,6 +7,34 @@
     font-size: 14px;
     font-weight: 500;
     padding: 0px 5px;
+
+    .nav-link {
+      cursor: pointer;
+    }
+  }
+}
+
+.home-movie-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  overflow: hidden;
+  padding: 0px;
+  margin: 8px;
+
+  .movie-img {
+    filter: saturate(0.8) contrast(1.1) brightness(0.75);
+  }
+
+  &:hover .movie-img {
+    filter: saturate(1) contrast(1) brightness(1);
+    transform: scale(1.1);
+  }
+
+  @media screen and (max-width: 992px) {
+    width: 75px;
+    height: 75px;
+    box-shadow: 0px 5px 50px 5px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -111,6 +139,7 @@
   height: 100%;
   overflow: hidden;
   border-radius: 10px;
+  cursor: pointer;
   transition: 0.25s ease;
 
   img {
@@ -162,6 +191,10 @@
   }
 
   .action-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+
     i {
       color: var(--primary);
       font-size: 24px;
@@ -307,7 +340,7 @@
     .action-btn {
       border: none;
       outline: none;
-      background: var(--primary);
+      background: var(--primary-dark);
       font-size: 16px;
       text-align: center;
       box-sizing: border-box;
@@ -317,10 +350,6 @@
       margin: 0px 10px;
       transition: 0.25s ease;
       box-shadow: 0 0 25px 5px rgba(0, 0, 0, 0.25);
-
-      &:hover {
-        background: var(--primary-dark);
-      }
 
       i {
         color: var(--dark);
@@ -394,34 +423,33 @@
       margin-right: 15px;
       width: 75px;
       height: 75px;
-      border-radius: 50px;
       border: 2px solid var(--secondary);
       box-shadow: 0 0 20px 10px rgba(0, 0, 0, 0.2);
       overflow: hidden;
-      margin: 0px 17px;
+      border-radius: 50px;
+      cursor: pointer;
       transition: 0.25s ease;
 
       @media screen and (max-width: 992px) {
-        margin: 0px 9px;
+        margin-right: 9px;
         width: 60px;
         height: 60px;
       }
 
       &:hover {
-        transform: scale(1.05);
+        transform: scale(1.2);
       }
 
       img {
-        width: 100%;
-        object-fit: contain;
-        cursor: pointer;
         height: 75px;
+        width: 100%;
         object-fit: cover;
+        cursor: pointer;
         transition: 0.25s ease;
         filter: brightness(0.85);
 
         @media screen and (max-width: 992px) {
-          height: 50px;
+          height: 60px;
         }
       }
 

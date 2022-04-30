@@ -9,9 +9,14 @@ module.exports = function (app) {
     next();
   });
   app.get("/api/movies/", movies.findAll);
+  app.get("/api/movies/popular", movies.findPopular);
   app.get("/api/movies/:id", movies.findOne);
+  app.get("/api/movies/watchlist/:id", movies.getUserWatchlist);
+
   app.post("/api/movies/", movies.create);
-  app.post("/api/movies/bookmark", movies.addBookmark);
+  app.post("/api/movies/bookmark", movies.addToWatchlist);
+  app.post("/api/movies/like", movies.addLiked);
+
   app.put(
     "/api/movies/:id",
     [authJwt.verifyToken, authJwt.isModerator],

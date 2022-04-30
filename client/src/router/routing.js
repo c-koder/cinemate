@@ -17,6 +17,8 @@ import Profile from "../pages/profile.page";
 import Register from "../pages/register.page";
 
 import { getCurrentUser, logout } from "../services/auth.service";
+import { ToastContainer } from "react-toastify";
+import Watchlist from "../pages/watchlist.page";
 
 const Routing = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -40,12 +42,13 @@ const Routing = () => {
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
       <Router>
+        <ToastContainer />
         <Navigation handleLogout={handleLogout} />
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/explore" element={<Movies />} />
           <Route path="/movie/:id" element={<MovieDetails />} />
-          <Route path="/saved" />
+          <Route path="/watchlist" element={<Watchlist />} />
           <Route
             exact
             path="/login"

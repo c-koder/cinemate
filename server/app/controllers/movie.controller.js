@@ -8,6 +8,7 @@ const Collection = db.collection;
 const CollectionController = require("./collection.controller.js");
 
 const Watchlist = db.watchlist;
+const Liked = db.liked;
 const User = db.user;
 const Review = db.review;
 const Cast = db.cast;
@@ -51,20 +52,20 @@ exports.create = (req, res) => {
     });
 };
 
-const getPagination = (page, size) => {
-  const limit = size ? +size : 12;
-  const offset = page ? page * limit : 0;
-  return { limit, offset };
-};
-
-const getPagingData = (data, page, limit) => {
-  const { count: totalItems, rows: movies } = data;
-  const currentPage = page ? +page : 12;
-  const totalPages = Math.ceil(totalItems / limit);
-  return { totalItems, movies, totalPages, currentPage };
-};
-
 exports.findAll = (req, res) => {
+  const getPagination = (page, size) => {
+    const limit = size ? +size : 12;
+    const offset = page ? page * limit : 0;
+    return { limit, offset };
+  };
+
+  const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: movies } = data;
+    const currentPage = page ? +page : 12;
+    const totalPages = Math.ceil(totalItems / limit);
+    return { totalItems, movies, totalPages, currentPage };
+  };
+
   const { page, size, title, genre, year, year_id, orderBy, ratedBy } =
     req.query;
 
@@ -133,6 +134,22 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findPopular = (req, res) => {
+  Movie.findAll({
+    order: [["popularity", "DESC"]],
+    limit: 12,
+    distinct: true,
+  })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving movies.",
+      });
+    });
+};
+
 exports.findOne = (req, res) => {
   const id = req.params.id;
   Movie.findByPk(id, {
@@ -142,6 +159,20 @@ exports.findOne = (req, res) => {
       },
       {
         model: Genre,
+      },
+      {
+        model: User,
+        as: "user_watchlist",
+        attributes: ["id"],
+        where: { id: req.query.userId },
+        required: false,
+      },
+      {
+        model: User,
+        as: "user_liked",
+        attributes: ["id"],
+        where: { id: req.query.userId },
+        required: false,
       },
       {
         model: Review,
@@ -173,7 +204,22 @@ exports.findOne = (req, res) => {
     });
 };
 
-exports.addBookmark = async (req, res) => {
+exports.getUserWatchlist = (req, res) => {
+  User.findAll({
+    include: [{ model: Movie, as: "user_watchlist" }],
+  })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving watchlist.",
+      });
+    });
+};
+
+exports.addToWatchlist = async (req, res) => {
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
@@ -191,9 +237,71 @@ exports.addBookmark = async (req, res) => {
   if (created) {
     res.send({ message: "Movie added to your watchlist." });
   } else {
+    Watchlist.destroy({
+      where: {
+        movieId: req.body.params.movieId,
+        userId: req.body.params.userId,
+      },
+    })
+      .then((num) => {
+        if (num == 1) {
+          res.status(400).send({
+            message: "Movie removed from your watchlist.",
+          });
+        } else {
+          res.send({
+            message: `Not found!`,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: "Could not delete from watchlist with id=" + id,
+        });
+      });
+  }
+};
+
+exports.addLiked = async (req, res) => {
+  if (!req.body) {
     res.status(400).send({
-      message: "Movie already in your watchlist.",
+      message: "Content can not be empty!",
     });
+    return;
+  }
+
+  const [liked, created] = await Liked.findOrCreate({
+    where: {
+      movieId: req.body.params.movieId,
+      userId: req.body.params.userId,
+    },
+  });
+
+  if (created) {
+    res.send({ message: "Movie liked." });
+  } else {
+    Liked.destroy({
+      where: {
+        movieId: req.body.params.movieId,
+        userId: req.body.params.userId,
+      },
+    })
+      .then((num) => {
+        if (num == 1) {
+          res.status(400).send({
+            message: "Movie disliked",
+          });
+        } else {
+          res.send({
+            message: `Not found!`,
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: "Could not delete Liked with id=" + id,
+        });
+      });
   }
 };
 

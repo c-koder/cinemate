@@ -1,6 +1,6 @@
-import Movie from "./movie.component";
+import HomeMovie from "./homeMovie.component";
 
-const MovieList = ({ movies, perRow }) => {
+const HomeMovieList = ({ movies, perRow }) => {
   const arrayChunk = (movies, n) => {
     const array = movies.slice();
     const chunks = [];
@@ -9,12 +9,12 @@ const MovieList = ({ movies, perRow }) => {
   };
 
   return (
-    <div className="">
+    <div>
       {arrayChunk(movies, perRow).map((row, i) => {
         return (
           <div key={i} className="row justify-content-center">
             {row.map((movie, i) => {
-              return <Movie key={movie.id} movie={movie} />;
+              return <HomeMovie key={movie.id} movie={movie} />;
             })}
           </div>
         );
@@ -23,4 +23,4 @@ const MovieList = ({ movies, perRow }) => {
   );
 };
 
-export default MovieList;
+export default HomeMovieList;

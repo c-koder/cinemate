@@ -4,7 +4,7 @@ import { useAnimation, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import ReactTooltip from "react-tooltip";
 import { Rating } from "react-simple-star-rating";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import movieNotfound from "../assets/movie-notfound.svg";
@@ -12,10 +12,14 @@ import castNotfound from "../assets/cast-notfound.svg";
 
 import { addReview } from "../services/review.service";
 import { AuthContext } from "../helpers/AuthContext";
-import { addToWatchlist, getMovieDetails } from "../services/movie.service";
+import {
+  addToLiked,
+  addToWatchlist,
+  getMovieDetails,
+} from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { Link, useParams } from "react-router-dom";
-import MovieCast from "../components/movieCast.component";
+import { toastOptions } from "../common/ToastOptions";
 
 const MovieDetails = () => {
   const { currentUser } = useContext(AuthContext);
@@ -24,6 +28,8 @@ const MovieDetails = () => {
   const { id } = useParams();
 
   const [movie, setMovie] = useState(undefined);
+  const [liked, setLiked] = useState(false);
+  const [isOnWatchlist, setIsOneWatchlist] = useState(false);
   const [reviews, setReviews] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -36,31 +42,21 @@ const MovieDetails = () => {
     setRating(rate);
   };
 
-  const toastOptions = {
-    position: "top-center",
-    autoClose: 5000,
-    hideProgressBar: true,
-    theme: "dark",
-    closeOnClick: false,
-    pauseOnHover: true,
-    draggable: true,
-  };
-
   const notifyError = (message) => toast.error(message, toastOptions);
   const notifySuccess = (message) => toast.success(message, toastOptions);
 
   useEffect(() => {
     setLoading(true);
-
-    getMovieDetails(id)
+    getMovieDetails({ movieId: id, userId: currentUser && currentUser.id })
       .then(async (response) => {
         setMovie(response.data);
-        console.log(response.data);
         setReviews(response.data.movie_reviews);
+        setLiked(response.data.user_liked.length > 0);
+        setIsOneWatchlist(response.data.user_watchlist.length > 0);
         setLoading(false);
       })
-      .catch((err) => console.log(err));
-  }, []);
+      .catch((err) => console.log());
+  }, [currentUser]);
 
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0 });
@@ -88,33 +84,52 @@ const MovieDetails = () => {
     if (movie)
       document.title =
         movie.title +
-        ` (${moment(movie.release_date, "YYYY-MM-DD").format(
-          "YYYY"
-        )}) - Cinemate`;
-  });
+        (movie.release_date !== null && movie.release_date !== "0000-00-00"
+          ? ` (${moment(movie.release_date, "YYYY-MM-DD").format(
+              "YYYY"
+            )}) - Cinemate`
+          : ``);
+  }, []);
 
   const handleAddReview = () => {
-    addReview({
-      content: review,
-      movieId: movie.id,
-      userId: currentUser.id,
-      rating: rating / 10,
-      username: currentUser.username,
-    }).then((response) => {
-      setReview("");
-      setRating(0);
-      setReviews([response.data, ...reviews]);
-    });
+    if (currentUser) {
+      addReview({
+        content: review,
+        movieId: movie.id,
+        userId: currentUser.id,
+        rating: rating / 10,
+        username: currentUser.username,
+      }).then((response) => {
+        setReview("");
+        setRating(0);
+        setReviews([response.data, ...reviews]);
+      });
+    }
   };
 
   const handleAddToWatchlist = () => {
     if (currentUser) {
       addToWatchlist({ movieId: movie.id, userId: currentUser.id })
         .then((response) => {
+          setIsOneWatchlist(true);
           notifySuccess(response.data.message);
         })
         .catch((err) => {
-          console.log(err);
+          setIsOneWatchlist(false);
+          notifyError(err.response.data.message);
+        });
+    }
+  };
+
+  const handleLikedMovie = () => {
+    if (currentUser) {
+      addToLiked({ movieId: movie.id, userId: currentUser.id })
+        .then((response) => {
+          setLiked(true);
+          notifySuccess(response.data.message);
+        })
+        .catch((err) => {
+          setLiked(false);
           notifyError(err.response.data.message);
         });
     }
@@ -132,7 +147,6 @@ const MovieDetails = () => {
           backgroundAttachment: "fixed",
         }}
       >
-        <ToastContainer />
         <div
           className="min-vh-100 container"
           style={{
@@ -171,15 +185,28 @@ const MovieDetails = () => {
                   <button
                     className="action-btn"
                     data-tip={`${
-                      !currentUser ? "Login to a" : "A"
-                    }dd to watchlist`}
+                      !currentUser
+                        ? "Login to"
+                        : isOnWatchlist
+                        ? "Remove from watchlist"
+                        : "Add to Watchlist"
+                    }`}
+                    style={{ background: isOnWatchlist && "var(--primary)" }}
                     onClick={handleAddToWatchlist}
                   >
                     <i className="bi bi-bookmark-fill"></i>
                   </button>
                   <button
                     className="action-btn"
-                    data-tip={`${!currentUser ? "Login to like" : "I like it"}`}
+                    data-tip={`${
+                      !currentUser
+                        ? "Login to like"
+                        : liked
+                        ? "Remove from liked"
+                        : "I like it"
+                    }`}
+                    style={{ background: liked && "var(--primary)" }}
+                    onClick={handleLikedMovie}
                   >
                     <i className="bi bi-emoji-smile-fill"></i>
                   </button>
@@ -197,11 +224,15 @@ const MovieDetails = () => {
               </div>
               <div className="col details">
                 <span className="title">{movie.title}</span>
-                <span style={{ fontSize: 32 }}>
-                  {` (${moment(movie.release_date, "YYYY-MM-DD").format(
-                    "YYYY"
-                  )})`}
-                </span>
+                {movie.release_date !== null &&
+                  movie.release_date !== "0000-00-00" && (
+                    <span style={{ fontSize: 32 }}>
+                      {` (${moment(movie.release_date, "YYYY-MM-DD").format(
+                        "YYYY"
+                      )})`}
+                    </span>
+                  )}
+
                 <div className="tagline">{movie.tagline}</div>
                 <div className="genres">
                   {movie.genres.map((genre) => {
@@ -240,34 +271,26 @@ const MovieDetails = () => {
                     {movie.casts.map((cast, i) => {
                       if (i < 7)
                         return (
-                          <div className="row" key={i}>
-                            <button
-                              type="button"
-                              style={{ all: "unset" }}
-                              data-bs-toggle="modal"
-                              data-bs-target={`#castModal${i}`}
-                            >
-                              <div
-                                className="avatar-container"
-                                data-tip={`<div style='text-align: center;'><span style='font-weight: bold;'>${
-                                  cast.name
-                                }</span><br/> ${
-                                  cast.movie_casts.character !== null ?
-                                  `as ${cast.movie_casts.character}` : ""
-                                }
+                          <div
+                            key={i}
+                            className="avatar-container"
+                            data-tip={`<div style='text-align: center;'><span style='font-weight: bold;'>${
+                              cast.name
+                            }</span><br/> ${
+                              cast.movie_casts.character !== null
+                                ? `as ${cast.movie_casts.character}`
+                                : ""
+                            }
                                   </div>`}
-                              >
-                                <img
-                                  src={`https://image.tmdb.org/t/p/w500${cast.profile_path}`}
-                                  onError={(e) => (
-                                    (e.target.onerror = null),
-                                    (e.target.src = castNotfound)
-                                  )}
-                                  alt="avatar"
-                                />
-                              </div>
-                            </button>
-                            <MovieCast target={`castModal${i}`} cast={cast} />
+                          >
+                            <img
+                              src={`https://image.tmdb.org/t/p/w500${cast.profile_path}`}
+                              onError={(e) => (
+                                (e.target.onerror = null),
+                                (e.target.src = castNotfound)
+                              )}
+                              alt="avatar"
+                            />
                           </div>
                         );
                     })}

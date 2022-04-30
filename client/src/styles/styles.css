@@ -7,8 +7,8 @@
   --primary-dark: #ac0600;
   --primary-light: #f8dfdd;
 
-  --secondary: #333333;
-  --secondary-rgb: 180, 180, 180;
+  --secondary: #202020;
+  --secondary-rgb: 32, 32, 32;
 
   --danger: #d4112e;
   --danger-rgb: 212, 17, 46;
@@ -16,9 +16,7 @@
   --success: #20c51a;
   --success-rgb: 32, 197, 26;
 
-  --bg: #f6f6f6;
-
-  --dark: #181818;
+  --dark: #0e0e0e;
   --light: #fbfbfb;
   --light-white: #d8d8d8;
 
@@ -29,6 +27,8 @@
   margin: 0;
   padding: 0;
   font-family: "Poppins", sans-serif;
+  cursor: default;
+  user-select: none;
 }
 
 *:disabled {
@@ -146,7 +146,7 @@ body {
   color: var(--dark) !important;
   background: var(--primary);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   padding: 8px 12px;
   border-radius: 5px;
   transition: 0.2s ease;
