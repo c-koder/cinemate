@@ -17,8 +17,13 @@
   --success-rgb: 32, 197, 26;
 
   --dark: #0e0e0e;
+  --dark-rgb: 14, 14, 14;
+
   --light: #fbfbfb;
+  --light-rgb: 251, 251, 251;
+
   --light-white: #d8d8d8;
+  --light-white-rgb: 216, 216, 216;
 
   --main-font-size: 16px;
 }
@@ -120,10 +125,10 @@ body {
   border-color: var(--secondary);
 }
 
-.form-control:hover,
+/* .form-control:hover,
 .form-control:focus {
   border-color: var(--light-white) !important;
-}
+} */
 
 .form-container .signin-link {
   min-width: 360px;

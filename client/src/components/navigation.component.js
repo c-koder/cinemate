@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../helpers/AuthContext";
 import ContextDropdown from "./contextDropdown.component";
 
+import logo from "../assets/logo.png";
+
 const Navigation = ({ handleLogout }) => {
   const { currentUser } = useContext(AuthContext);
 
@@ -29,7 +31,7 @@ const Navigation = ({ handleLogout }) => {
           className="navbar-brand d-flex me-auto"
           style={{ cursor: "pointer" }}
         >
-          Cinemate
+          <img src={logo} style={{ width: "50%" }} />
         </Link>
         <button
           className="navbar-toggler"
@@ -53,6 +55,23 @@ const Navigation = ({ handleLogout }) => {
             </li>
             {currentUser ? (
               <div className="navbar-nav ml-auto">
+                <li className="nav-item">
+                  <Link to="/recommended" className="nav-link hstack">
+                    Recommended
+                    <span
+                      className="badge badge-secondary"
+                      style={{
+                        cursor: "pointer",
+                        background: "var(--primary)",
+                        marginLeft: 10,
+                        fontWeight: 700,
+                        color: "var(--dark)",
+                      }}
+                    >
+                      BETA
+                    </span>
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link to="/watchlist" className="nav-link">
                     Watchlist

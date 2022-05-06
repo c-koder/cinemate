@@ -1,141 +1,148 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useAnimation, motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+
 import MovieSizeDropdown from "./movieFilterDropdown.component";
 
 const MovieFilters = (props) => {
-  const navigate = useNavigate();
+  const controls = useAnimation();
+  const [ref, inView] = useInView({ threshold: 0 });
+
+  const viewAnim = {
+    visible: {
+      opacity: 1,
+      transform: "translateX(0px)",
+      transition: { duration: 0.4 },
+    },
+    hidden: {
+      opacity: 0,
+      transform: "translateX(-50px)",
+    },
+  };
+
+  useEffect(() => {
+    if (inView) {
+      controls.start("visible");
+    }
+  }, [controls, inView]);
 
   return (
-    <div className="filter-container">
-      <div className="row">
-        <div
-          className="form-horizontal hstack align-items-end"
-          style={{ padding: "0px 20px" }}
-        >
-          <div className="form-group w-100">
-            <label>Seach</label>
-            <input
-              type="text"
-              name="username"
-              className="form-control"
-              placeholder="Find a good one matey..."
-              value={props.searchTitle}
-              onChange={(e) => props.setSearchTitle(e.target.value)}
-            />
-          </div>
-          {props.searchTitle !== "" && (
-            <div className="form-group" style={{ marginLeft: 20 }}>
-              <button
-                className="btn btn-primary primary-btn"
-                style={{ width: 40 }}
-                onClick={() => {
-                  navigate(`/explore`);
-                  props.setSearchTitle("");
-                }}
+    <motion.div
+      ref={ref}
+      animate={controls}
+      initial="hidden"
+      variants={viewAnim}
+      className="col-md-auto min-vh-100 filter-container"
+    >
+      <div className="vstack">
+        <span style={{ color: "var(--light)", fontSize: 20 }}>
+          Filter Options
+        </span>
+        <hr
+          style={{
+            background: "var(--light)",
+            padding: "0.5px 0px",
+            margin: 0,
+            borderRadius: 20,
+            opacity: 0.5,
+          }}
+        />
+        <span>Genre</span>
+        <ul className="side-dropdown">
+          {props.genres.map((value) => {
+            return (
+              <li
+                className={props.genre.name === value.name ? "selected" : ""}
+                key={value.id}
+                onClick={() => props.setGenre(value)}
               >
-                <i class="bi bi-x-circle" style={{ marginRight: 0 }}></i>
-              </button>
-            </div>
-          )}
-          <div className="form-group" style={{ marginLeft: 20 }}>
-            <button
-              className="btn btn-primary primary-btn"
-              style={{ width: 40 }}
-              onClick={() => {
-                navigate(`/explore?title=${props.searchTitle}`);
-              }}
-            >
-              <i class="bi bi-search" style={{ marginRight: 0 }}></i>
-            </button>
-          </div>
+                {value.name}
+              </li>
+            );
+          })}
+        </ul>
+        <hr
+          style={{
+            background: "var(--light-rgb)",
+            padding: "0.5px 0px",
+            borderRadius: 20,
+            opacity: 0.5,
+            margin: 0,
+          }}
+        />
+        <span>Order By</span>
+        <ul className="side-dropdown">
+          {props.orderBys.map((value) => {
+            return (
+              <li
+                className={props.orderBy.name === value.name ? "selected" : ""}
+                key={value.id}
+                onClick={() => props.setOrderBy(value)}
+              >
+                {value.name}
+              </li>
+            );
+          })}
+        </ul>
+        <hr
+          style={{
+            background: "var(--light)",
+            padding: "0.5px 0px",
+            margin: 0,
+            borderRadius: 20,
+            opacity: 0.5,
+          }}
+        />
+        <div className="dropdown filter-dropdown">
+          <span>Rating</span>
+          <button
+            className="primary-btn filter-btn hstack"
+            id="movieSizeDropdown"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            {props.ratedBy.name}
+            <i className="bi bi-filter-right ms-auto"></i>
+          </button>
+          <MovieSizeDropdown
+            values={props.ratedBys}
+            setValue={props.setRatedBy}
+          />
+        </div>
+        <div className="dropdown filter-dropdown">
+          <span>Year</span>
+          <button
+            className="primary-btn filter-btn hstack"
+            id="movieSizeDropdown"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            {props.year.name}
+            <i className="bi bi-filter-right ms-auto"></i>
+          </button>
+          <MovieSizeDropdown values={props.years} setValue={props.setYear} />
+        </div>
+        <div className="dropdown filter-dropdown">
+          <span>Items to show</span>
+          <button
+            className="primary-btn filter-btn hstack"
+            id="movieSizeDropdown"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            {props.pageSize.name}
+            <i className="bi bi-filter-right ms-auto"></i>
+          </button>
+          <MovieSizeDropdown
+            values={props.pageSizes}
+            setValue={props.setPageSize}
+          />
         </div>
       </div>
-      <div className="row">
-        <div className="d-flex">
-          <div className="dropdown filter-dropdown">
-            <span>Genre</span>
-            <button
-              className="primary-btn filter-btn hstack"
-              id="movieSizeDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              {props.genre.name}
-              <i className="bi bi-filter-right ms-auto"></i>
-            </button>
-            <MovieSizeDropdown
-              values={props.genres}
-              setValue={props.setGenre}
-            />
-          </div>
-          <div className="dropdown filter-dropdown">
-            <span>Rating</span>
-            <button
-              className="primary-btn filter-btn hstack"
-              id="movieSizeDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              {props.ratedBy.name}
-              <i className="bi bi-filter-right ms-auto"></i>
-            </button>
-            <MovieSizeDropdown
-              values={props.ratedBys}
-              setValue={props.setRatedBy}
-            />
-          </div>
-          <div className="dropdown filter-dropdown">
-            <span>Year</span>
-            <button
-              className="primary-btn filter-btn hstack"
-              id="movieSizeDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              {props.year.name}
-              <i className="bi bi-filter-right ms-auto"></i>
-            </button>
-            <MovieSizeDropdown values={props.years} setValue={props.setYear} />
-          </div>
-          <div className="dropdown filter-dropdown">
-            <span>Order By</span>
-            <button
-              className="primary-btn filter-btn hstack"
-              id="movieSizeDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              {props.orderBy.name}
-              <i className="bi bi-filter-right ms-auto"></i>
-            </button>
-            <MovieSizeDropdown
-              values={props.orderBys}
-              setValue={props.setOrderBy}
-            />
-          </div>
-          <div className="dropdown filter-dropdown">
-            <span>Items to show</span>
-            <button
-              className="primary-btn filter-btn hstack"
-              id="movieSizeDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              {props.pageSize.name}
-              <i className="bi bi-filter-right ms-auto"></i>
-            </button>
-            <MovieSizeDropdown
-              values={props.pageSizes}
-              setValue={props.setPageSize}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+    </motion.div>
   );
 };
 

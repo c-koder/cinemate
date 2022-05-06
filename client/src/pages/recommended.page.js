@@ -6,8 +6,9 @@ import MovieList from "../components/movieList.component";
 import { getWatchlist } from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { Link } from "react-router-dom";
+import Quiz from "./quiz.page";
 
-const Watchlist = () => {
+const Recommended = () => {
   const { width } = useWindowDimensions();
 
   const [movies, setMovies] = useState([]);
@@ -17,7 +18,6 @@ const Watchlist = () => {
     setLoading(true);
     getWatchlist()
       .then((response) => {
-        setMovies(response.data[0].user_watchlist);
         setLoading(false);
       })
       .catch((err) => console.log(err));
@@ -68,18 +68,26 @@ const Watchlist = () => {
         className="text-center"
       >
         <h1 style={{ color: "var(--light)", padding: 10, fontSize: 32 }}>
-          Watchlist
+          Recommended Movies
         </h1>
         {movies.length > 0 ? (
           <MovieList movies={movies} perRow={4} />
         ) : (
           <div>
             <h1 style={{ color: "var(--light)", padding: 10, fontSize: 18 }}>
-              Your watchlist is empty.
+              Didn't find any recommendations.
+              <br />
+              Perhaps, a quick quiz?
             </h1>
-            <Link to="/explore">
-              <button className="primary-btn">Explore Movies</button>
-            </Link>
+            <button
+              type="button"
+              className="primary-btn"
+              data-bs-toggle="modal"
+              data-bs-target="#quizModal"
+            >
+              Take the Quiz
+            </button>
+            <Quiz />
           </div>
         )}
       </motion.div>
@@ -87,4 +95,4 @@ const Watchlist = () => {
   );
 };
 
-export default Watchlist;
+export default Recommended;

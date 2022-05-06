@@ -50,6 +50,17 @@ function initial() {
   });
 }
 
+app.use(function (err, req, res, next) {
+  console.error("-----------------------err.stack--------------------------");
+  console.log(err);
+  console.error("-----------------------err.stack--------------------------");
+  if (err.message) {
+    success(res, err.message, 400)(err);
+  } else {
+    res.status(500).json("Oops, something went terribly wrong!");
+  }
+});
+
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {

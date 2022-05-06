@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useAnimation, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import Pagination from "react-responsive-pagination";
+import { useNavigate } from "react-router-dom";
 
 import MovieFilters from "../components/movieFilters.component";
 import MovieList from "../components/movieList.component";
@@ -11,16 +12,18 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import { useSearchParams } from "react-router-dom";
 
 const Movies = () => {
+  const navigate = useNavigate();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const { width } = useWindowDimensions();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
 
   const pageSizes = [
-    { id: 0, name: 6 },
-    { id: 1, name: 9 },
-    { id: 2, name: 12 },
-    { id: 3, name: 15 },
+    { id: 0, name: 8 },
+    { id: 1, name: 12 },
+    { id: 2, name: 16 },
+    { id: 3, name: 20 },
   ];
   const [pageSize, setPageSize] = useState(pageSizes[2]);
 
@@ -131,18 +134,28 @@ const Movies = () => {
         setPageCount(response.data.totalPages);
         setLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setLoading(true);
+      });
   };
 
   useEffect(() => {
-    getGenres().then((response) => {
-      let tempGenres = [{ id: 0, name: "All" }];
-      response.data.map((item) => {
-        tempGenres.push(item);
+    setLoading(true);
+    getGenres()
+      .then((response) => {
+        let tempGenres = [{ id: 0, name: "All" }];
+        response.data.map((item) => {
+          tempGenres.push(item);
+        });
+        setGenres(tempGenres);
+        setGenre(tempGenres[0]);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
       });
-      setGenres(tempGenres);
-      setGenre(tempGenres[0]);
-    });
   }, []);
 
   const requestParams = (
@@ -203,9 +216,22 @@ const Movies = () => {
     }
   }, [controls, inView]);
 
-  return (
-    <div className="min-vh-100 d-flex flex-column justify-content-center align-items-center container">
-      {width > 992 && (
+  return loading ? (
+    <span
+      className="spinner-border spinner-border-lg"
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        margin: "auto",
+        color: "var(--light)",
+      }}
+    ></span>
+  ) : (
+    <div className="row justify-content-center">
+      {width > 1800 && (
         <MovieFilters
           pageSize={pageSize}
           setPageSize={setPageSize}
@@ -226,91 +252,126 @@ const Movies = () => {
           setRatedBy={setRatedBy}
         />
       )}
+      <motion.div
+        ref={ref}
+        animate={controls}
+        initial="hidden"
+        variants={viewAnim}
+        className="col-lg mx-auto text-center"
+        style={{ padding: "100px 0px 40px" }}
+      >
+        <h1 style={{ color: "var(--light)", padding: 10, fontSize: 24 }}>
+          Explore Movies
+        </h1>
+        <div className="form-horizontal hstack align-items-end justify-content-center">
+          <div
+            className={`form-group hstack ${width > 992 ? "w-25" : "w-50"}`}
+            style={{
+              background: "var(--secondary)",
+              paddingLeft: searchTitle !== "" && 20,
+              borderRadius: 5,
+            }}
+          >
+            {searchTitle !== "" && (
+              <i
+                className="bi bi-x-circle"
+                style={{
+                  color: "rgba(var(--light-rgb), 0.5)",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  navigate(`/explore`);
+                  setSearchTitle("");
+                }}
+              />
+            )}
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Find a good one mate"
+              value={searchTitle}
+              onChange={(e) => setSearchTitle(e.target.value)}
+            />
+          </div>
+          <div className="form-group" style={{ marginLeft: 20 }}>
+            <button
+              className="btn btn-primary primary-btn"
+              style={{ width: 40 }}
+              onClick={() =>
+                searchTitle !== "" && navigate(`/explore?title=${searchTitle}`)
+              }
+            >
+              <i className="bi bi-search" style={{ cursor: "pointer" }}></i>
+            </button>
+          </div>
+        </div>
+        <br />
+        {(genre.name !== "All" ||
+          ratedBy.name !== "All" ||
+          year.name !== "All" ||
+          orderBy.name !== "Latest") && (
+          <span className="filters-tab">
+            Filters:{" "}
+            {genre.name !== "All" && (
+              <span style={{ margin: "0px 4px" }}>
+                {genre.name}{" "}
+                <i
+                  className="bi bi-x-circle"
+                  style={{ margin: "0 8px 0px 4px" }}
+                  onClick={() => setGenre(genres[0])}
+                />
+              </span>
+            )}
+            {ratedBy.name !== "All" && (
+              <span style={{ margin: "0px 4px" }}>
+                {ratedBy.name}{" "}
+                <i
+                  className="bi bi-x-circle"
+                  style={{ margin: "0 8px 0px 4px" }}
+                  onClick={() => setRatedBy(ratedBys[0])}
+                />
+              </span>
+            )}
+            {year.name !== "All" && (
+              <span style={{ margin: "0px 4px" }}>
+                {year.name}{" "}
+                <i
+                  className="bi bi-x-circle"
+                  style={{ margin: "0 8px 0px 4px" }}
+                  onClick={() => setYear(years[0])}
+                />
+              </span>
+            )}
+            {orderBy.name !== "Latest" && (
+              <span style={{ margin: "0px 4px" }}>
+                {orderBy.name}{" "}
+                <i
+                  className="bi bi-x-circle"
+                  style={{ margin: "0 8px 0px 4px" }}
+                  onClick={() => setOrderBy(orderBys[0])}
+                />
+              </span>
+            )}
+            <br />
+            <br />
+          </span>
+        )}
 
-      {loading ? (
-        <span
-          className="centered spinner-border spinner-border-lg mx-2"
-          style={{ color: "var(--light)" }}
-        ></span>
-      ) : (
-        <motion.div
-          ref={ref}
-          animate={controls}
-          initial="hidden"
-          variants={viewAnim}
-          className="text-center"
-          style={{ marginTop: width > 992 && "375px" }}
-        >
-          <h1 style={{ color: "var(--light)", padding: 10, fontSize: 24 }}>
-            Explore Movies
-          </h1>
-          {(genre.name !== "All" ||
-            ratedBy.name !== "All" ||
-            year.name !== "All" ||
-            orderBy.name !== "Latest") && (
-            <span className="filters-tab">
-              Filters:{" "}
-              {genre.name !== "All" && (
-                <span style={{ margin: "0px 4px" }}>
-                  {genre.name}{" "}
-                  <i
-                    className="bi bi-x-circle"
-                    style={{ margin: "0 8px 0px 4px" }}
-                    onClick={() => setGenre(genres[0])}
-                  />
-                </span>
-              )}
-              {ratedBy.name !== "All" && (
-                <span style={{ margin: "0px 4px" }}>
-                  {ratedBy.name}{" "}
-                  <i
-                    className="bi bi-x-circle"
-                    style={{ margin: "0 8px 0px 4px" }}
-                    onClick={() => setRatedBy(ratedBys[0])}
-                  />
-                </span>
-              )}
-              {year.name !== "All" && (
-                <span style={{ margin: "0px 4px" }}>
-                  {year.name}{" "}
-                  <i
-                    className="bi bi-x-circle"
-                    style={{ margin: "0 8px 0px 4px" }}
-                    onClick={() => setYear(years[0])}
-                  />
-                </span>
-              )}
-              {orderBy.name !== "Latest" && (
-                <span style={{ margin: "0px 4px" }}>
-                  {orderBy.name}{" "}
-                  <i
-                    className="bi bi-x-circle"
-                    style={{ margin: "0 8px 0px 4px" }}
-                    onClick={() => setOrderBy(orderBys[0])}
-                  />
-                </span>
-              )}
-              <br />
-              <br />
-            </span>
-          )}
-
-          <Pagination
-            current={currentPage}
-            total={pageCount}
-            onPageChange={(e) => setCurrentPage(e)}
-            maxWidth={width > 992 ? 600 : width > 400 ? 400 : 300}
-          />
-          <MovieList movies={movies} perRow={3} />
-          <br />
-          <Pagination
-            current={currentPage}
-            total={pageCount}
-            onPageChange={(e) => setCurrentPage(e)}
-            maxWidth={width > 992 ? 600 : width > 400 ? 400 : 300}
-          />
-        </motion.div>
-      )}
+        <Pagination
+          current={currentPage}
+          total={pageCount}
+          onPageChange={(e) => setCurrentPage(e)}
+          maxWidth={width > 992 ? 600 : width > 400 ? 400 : 300}
+        />
+        <MovieList movies={movies} perRow={4} />
+        <br />
+        <Pagination
+          current={currentPage}
+          total={pageCount}
+          onPageChange={(e) => setCurrentPage(e)}
+          maxWidth={width > 992 ? 600 : width > 400 ? 400 : 300}
+        />
+      </motion.div>
     </div>
   );
 };

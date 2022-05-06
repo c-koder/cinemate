@@ -19,6 +19,8 @@ import Register from "../pages/register.page";
 import { getCurrentUser, logout } from "../services/auth.service";
 import { ToastContainer } from "react-toastify";
 import Watchlist from "../pages/watchlist.page";
+import Footer from "../components/footer.component";
+import Recommended from "../pages/recommended.page";
 
 const Routing = () => {
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -59,8 +61,10 @@ const Routing = () => {
             path="/register"
             element={currentUser ? <Navigate to="/" /> : <Register />}
           />
+          <Route exact path="/recommended" element={<Recommended />} />
           <Route exact path="/profile" element={<Profile />} />
         </Routes>
+        <Footer />
       </Router>
     </AuthContext.Provider>
   );
