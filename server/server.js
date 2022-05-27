@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const app = express();
 
 const corsOptions = {
-  origin: "https://cinemate-app.netlify.app/",
+  origin: "https://cinemate-app.netlify.app",
 };
 
 app.use(cors(corsOptions));
