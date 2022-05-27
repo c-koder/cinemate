@@ -10,10 +10,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.json({ message: "Cinemate Server-Side" });
-});
-
 const db = require("./app/models");
 const Role = db.role;
 db.sequelize.sync().then(() => {
@@ -24,6 +20,7 @@ require("./app/routes/movie.routes")(app);
 require("./app/routes/genre.routes")(app);
 require("./app/routes/cast.routes")(app);
 require("./app/routes/review.routes")(app);
+require("./app/routes/recommendation.routes")(app);
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 
@@ -61,8 +58,6 @@ app.use(function (err, req, res, next) {
   }
 });
 
-const PORT = process.env.PORT || 8080;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+app.listen(process.env.PORT || 8080, () => {
+  console.log(`Server is running on port ${process.env.PORT || 8080}.`);
 });

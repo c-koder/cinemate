@@ -20,6 +20,10 @@ db.genre = require("./genre.model.js")(sequelize, Sequelize);
 db.cast = require("./cast.model.js")(sequelize, Sequelize);
 db.review = require("./review.model.js")(sequelize, Sequelize);
 db.collection = require("./collection.model.js")(sequelize, Sequelize);
+db.recommendation = require("./recommendation.model.js")(
+  sequelize,
+  Sequelize
+);
 
 db.genre.belongsToMany(db.movie, {
   through: "movie_genres",
@@ -109,6 +113,14 @@ db.review.belongsTo(db.user, {
 });
 db.user.hasMany(db.review, {
   as: "user_reviews",
+});
+
+db.recommendation.belongsTo(db.user, {
+  as: "user_recommendations",
+  foreignKey: "userId",
+});
+db.user.hasMany(db.recommendation, {
+  as: "user_recommendations",
 });
 
 module.exports = db;

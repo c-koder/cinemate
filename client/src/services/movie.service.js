@@ -9,6 +9,10 @@ export const getPopularMovies = (params) => {
   return http.get("/movies/popular", { params });
 };
 
+export const getRecommendedMovies = (params) => {
+  return http.get(`/movies/recommended`, { params });
+};
+
 export const getMovieDetails = (params) => {
   return http.get(`/movies/${params.movieId}`, { params });
 };

@@ -2,7 +2,7 @@ import moment from "moment";
 import { useState, useEffect } from "react";
 import { useAnimation, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import Pagination from "react-responsive-pagination";
+import Pagination from "react-js-pagination";
 import { useNavigate } from "react-router-dom";
 
 import MovieFilters from "../components/movieFilters.component";
@@ -17,7 +17,7 @@ const Movies = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { width } = useWindowDimensions();
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   const pageSizes = [
     { id: 0, name: 8 },
@@ -130,8 +130,8 @@ const Movies = () => {
 
     getMovies(params)
       .then(async (response) => {
+        setTotalItems(response.data.totalItems);
         setMovies(response.data.movies);
-        setPageCount(response.data.totalPages);
         setLoading(false);
       })
       .catch((err) => {
@@ -358,18 +358,28 @@ const Movies = () => {
         )}
 
         <Pagination
-          current={currentPage}
-          total={pageCount}
-          onPageChange={(e) => setCurrentPage(e)}
-          maxWidth={width > 992 ? 600 : width > 400 ? 400 : 300}
+          activePage={currentPage}
+          itemsCountPerPage={pageSize.name}
+          totalItemsCount={totalItems}
+          pageRangeDisplayed={5}
+          itemClass="page-item"
+          linkClass="page-link"
+          prevPageText="‹"
+          nextPageText="›"
+          onChange={(e) => setCurrentPage(e)}
         />
         <MovieList movies={movies} perRow={4} />
         <br />
         <Pagination
-          current={currentPage}
-          total={pageCount}
-          onPageChange={(e) => setCurrentPage(e)}
-          maxWidth={width > 992 ? 600 : width > 400 ? 400 : 300}
+          activePage={currentPage}
+          itemsCountPerPage={pageSize.name}
+          totalItemsCount={totalItems}
+          pageRangeDisplayed={5}
+          itemClass="page-item"
+          linkClass="page-link"
+          prevPageText="‹"
+          nextPageText="›"
+          onChange={(e) => setCurrentPage(e)}
         />
       </motion.div>
     </div>

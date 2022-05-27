@@ -49,29 +49,29 @@ const Navigation = ({ handleLogout }) => {
               </Link>
             </li>
             <li className="nav-item">
+              <Link to="/recommended" className="nav-link hstack">
+                Recommended
+                <span
+                  className="badge badge-secondary"
+                  style={{
+                    cursor: "pointer",
+                    background: "var(--primary)",
+                    marginLeft: 10,
+                    fontWeight: 700,
+                    color: "var(--dark)",
+                  }}
+                >
+                  BETA
+                </span>
+              </Link>
+            </li>
+            <li className="nav-item">
               <Link to="/explore" className="nav-link">
                 Explore
               </Link>
             </li>
             {currentUser ? (
               <div className="navbar-nav ml-auto">
-                <li className="nav-item">
-                  <Link to="/recommended" className="nav-link hstack">
-                    Recommended
-                    <span
-                      className="badge badge-secondary"
-                      style={{
-                        cursor: "pointer",
-                        background: "var(--primary)",
-                        marginLeft: 10,
-                        fontWeight: 700,
-                        color: "var(--dark)",
-                      }}
-                    >
-                      BETA
-                    </span>
-                  </Link>
-                </li>
                 <li className="nav-item">
                   <Link to="/watchlist" className="nav-link">
                     Watchlist

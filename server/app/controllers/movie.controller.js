@@ -1,4 +1,6 @@
 const db = require("../models");
+const sequelize = db.sequelize;
+
 const Movie = db.movie;
 
 const Genre = db.genre;
@@ -12,6 +14,7 @@ const Liked = db.liked;
 const User = db.user;
 const Review = db.review;
 const Cast = db.cast;
+const MovieCast = db.movieCast;
 
 const Op = db.Sequelize.Op;
 
@@ -52,20 +55,20 @@ exports.create = (req, res) => {
     });
 };
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 12;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: totalItems, rows: movies } = data;
+  const currentPage = page ? +page : 12;
+  const totalPages = Math.ceil(totalItems / limit);
+  return { totalItems, movies, totalPages, currentPage };
+};
+
 exports.findAll = (req, res) => {
-  const getPagination = (page, size) => {
-    const limit = size ? +size : 12;
-    const offset = page ? page * limit : 0;
-    return { limit, offset };
-  };
-
-  const getPagingData = (data, page, limit) => {
-    const { count: totalItems, rows: movies } = data;
-    const currentPage = page ? +page : 12;
-    const totalPages = Math.ceil(totalItems / limit);
-    return { totalItems, movies, totalPages, currentPage };
-  };
-
   const { page, size, title, genre, year, year_id, orderBy, ratedBy } =
     req.query;
 
@@ -150,8 +153,121 @@ exports.findPopular = (req, res) => {
     });
 };
 
+exports.findRecommended = (req, res) => {
+  let genres = req.query.genres;
+  const duration = JSON.parse(req.query.duration);
+  const era = JSON.parse(req.query.era);
+  const page = req.query.page;
+
+  let runtimeQuery =
+    duration === 0
+      ? { runtime: { [Op.lt]: 45 } }
+      : duration === 1
+      ? {
+          runtime: {
+            [Op.and]: {
+              [Op.lt]: 60,
+              [Op.gt]: 45,
+            },
+          },
+        }
+      : duration === 2
+      ? {
+          runtime: {
+            [Op.and]: {
+              [Op.lt]: 90,
+              [Op.gt]: 60,
+            },
+          },
+        }
+      : duration === 3
+      ? {
+          runtime: {
+            [Op.and]: {
+              [Op.lt]: 120,
+              [Op.gt]: 90,
+            },
+          },
+        }
+      : duration === 4
+      ? {
+          runtime: {
+            [Op.and]: {
+              [Op.gt]: 120,
+            },
+          },
+        }
+      : null;
+
+  let eraQuery =
+    era === 0
+      ? {
+          release_date: {
+            [Op.between]: ["1979", "1995"],
+          },
+        }
+      : era === 1
+      ? {
+          release_date: {
+            [Op.between]: ["1996", "2005"],
+          },
+        }
+      : era === 2
+      ? {
+          release_date: {
+            [Op.between]: ["1979", "2022"],
+          },
+        }
+      : era === 3
+      ? {
+          release_date: {
+            [Op.between]: ["2006", "2011"],
+          },
+        }
+      : era === 4
+      ? {
+          release_date: {
+            [Op.between]: ["2012", "2022"],
+          },
+        }
+      : null;
+
+  const { limit, offset } = getPagination(page, 16);
+
+  Movie.findAndCountAll({
+    include: [
+      {
+        model: Genre,
+        through: "movie_genres",
+        where: {
+          name: {
+            [Op.in]: [genres],
+          },
+        },
+      },
+    ],
+    where: {
+      ...runtimeQuery,
+      ...eraQuery,
+    },
+    limit,
+    offset,
+    distinct: true,
+  })
+    .then((data) => {
+      const response = getPagingData(data, page, limit);
+      res.send(response);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving movies.",
+      });
+    });
+};
+
 exports.findOne = (req, res) => {
-  const id = req.params.id;
+  const userId = req.query.userId;
+  const id = JSON.parse(req.params.id);
   Movie.findByPk(id, {
     include: [
       {
@@ -164,14 +280,14 @@ exports.findOne = (req, res) => {
         model: User,
         as: "user_watchlist",
         attributes: ["id"],
-        where: { id: req.query.userId },
+        where: userId && { id: userId },
         required: false,
       },
       {
         model: User,
         as: "user_liked",
         attributes: ["id"],
-        where: { id: req.query.userId },
+        where: userId && { id: userId },
         required: false,
       },
       {

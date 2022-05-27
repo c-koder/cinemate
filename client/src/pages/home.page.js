@@ -9,8 +9,7 @@ import bookmarkImg from "../assets/bookmarks.png";
 
 import HomeMovieList from "../components/homeMovieList.component";
 import useWindowDimensions from "../hooks/useWindowDimensions";
-import { addMovie, getPopularMovies } from "../services/movie.service";
-import { addCast } from "../services/cast.service";
+import { getPopularMovies } from "../services/movie.service";
 
 const Home = () => {
   const { width } = useWindowDimensions();

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import ReactTooltip from "react-tooltip";
 
 import notfound from "../assets/movie-notfound.svg";
-import { toastOptions } from "../common/ToastOptions";
+import { toastOptions } from "../common/toast-options";
 import { AuthContext } from "../helpers/AuthContext";
 import { addToWatchlist } from "../services/movie.service";
 
@@ -39,7 +39,7 @@ const Movie = ({ movie }) => {
         delayShow={0}
         html={true}
       />
-      <Link to={`/movie/${movie.id}`}>
+      <Link to={`/movie/${movie.id}`} style={{ cursor: "pointer" }}>
         <div className="menu">
           <i className="bi bi-three-dots-vertical"></i>
         </div>

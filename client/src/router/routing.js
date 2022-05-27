@@ -8,7 +8,7 @@ import {
 import Navigation from "../components/navigation.component";
 import { AuthContext } from "../helpers/AuthContext";
 
-import EventBus from "../common/EventBus";
+import EventBus from "../common/event-bus";
 import Home from "../pages/home.page";
 import Login from "../pages/login.page";
 import MovieDetails from "../pages/movieDetails.page";
@@ -37,8 +37,8 @@ const Routing = () => {
   }, []);
 
   const handleLogout = () => {
-    setCurrentUser(undefined);
     logout();
+    setCurrentUser(undefined);
   };
 
   return (

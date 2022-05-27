@@ -23,7 +23,6 @@ verifyToken = (req, res, next) => {
 
 isUser = (req, res, next) => {
   User.findByPk(req.userId).then((user) => {
-    console.log(user);
     user.getRoles().then((roles) => {
       for (let i = 0; i < roles.length; i++) {
         if (roles[i].name === "user") {

@@ -1,8 +1,8 @@
 module.exports = {
-  HOST: "localhost",
-  USER: "root",
-  PASSWORD: "",
-  DB: "cinemate",
+  HOST: "eu-cdbr-west-02.cleardb.net",
+  USER: "ba9a0159350a9d",
+  PASSWORD: "7e899e7c",
+  DB: "heroku_0116e7bf2d354fc",
   dialect: "mysql",
   pool: {
     max: 5,

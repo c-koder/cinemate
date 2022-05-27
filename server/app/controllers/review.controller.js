@@ -1,8 +1,5 @@
 const db = require("../models");
 const Review = db.review;
-const User = db.user;
-
-const Op = db.Sequelize.Op;
 
 exports.create = async (req, res) => {
   if (!req.body) {

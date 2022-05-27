@@ -19,7 +19,7 @@ import {
 } from "../services/movie.service";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { Link, useParams } from "react-router-dom";
-import { toastOptions } from "../common/ToastOptions";
+import { toastOptions } from "../common/toast-options";
 
 const MovieDetails = () => {
   const { currentUser } = useContext(AuthContext);
@@ -51,12 +51,14 @@ const MovieDetails = () => {
       .then(async (response) => {
         setMovie(response.data);
         setReviews(response.data.movie_reviews);
-        setLiked(response.data.user_liked.length > 0);
-        setIsOneWatchlist(response.data.user_watchlist.length > 0);
+        response.data.user_liked &&
+          setLiked(response.data.user_liked.length > 0);
+        response.data.user_watchlist &&
+          setIsOneWatchlist(response.data.user_watchlist.length > 0);
         setLoading(false);
       })
       .catch((err) => console.log());
-  }, [currentUser]);
+  }, []);
 
   const controls = useAnimation();
   const [ref, inView] = useInView({ threshold: 0 });
@@ -186,7 +188,7 @@ const MovieDetails = () => {
                     className="action-btn"
                     data-tip={`${
                       !currentUser
-                        ? "Login to"
+                        ? "Login to Add to Watchlist"
                         : isOnWatchlist
                         ? "Remove from watchlist"
                         : "Add to Watchlist"

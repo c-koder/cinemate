@@ -10,6 +10,7 @@ module.exports = function (app) {
   });
   app.get("/api/movies/", movies.findAll);
   app.get("/api/movies/popular", movies.findPopular);
+    app.get("/api/movies/recommended", movies.findRecommended);
   app.get("/api/movies/:id", movies.findOne);
   app.get("/api/movies/watchlist/:id", movies.getUserWatchlist);
 
